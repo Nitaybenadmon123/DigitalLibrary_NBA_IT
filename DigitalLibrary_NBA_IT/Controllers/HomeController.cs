@@ -13,18 +13,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
          
             return View();
 
-            ///fhjfgjfggf
-            ///fghfghfghghgf
-            ///fghfghfghghgf
-            ///fghfghfghghgf
-            ///fghfghfghghgf
-            ///fghfghfghghgf
-            ///fghfghfghghgf
-            ///fghfghfghghgf
-            ///fghfghfghghgf
-            ///fghfghfghghgf
-            ///fghfghfghghgf
-            ///fghfghfghghgf
+            
         }
 
         public ActionResult About()
