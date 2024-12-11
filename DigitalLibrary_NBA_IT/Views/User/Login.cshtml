@@ -1,0 +1,19 @@
+﻿<h2>Login</h2>
+<form action="/User/Login" method="post">
+    @Html.AntiForgeryToken()
+
+    <div>
+        <label>Email:</label>
+        <input name="email" type="email" class="form-control" required />
+    </div>
+    <div>
+        <label>Password:</label>
+        <input name="password" type="password" class="form-control" required />
+    </div>
+    <button type="submit">Login</button>
+</form>
+
+@if (ViewBag.Message != null)
+{
+    <p style="color: red;">@ViewBag.Message</p>
+}

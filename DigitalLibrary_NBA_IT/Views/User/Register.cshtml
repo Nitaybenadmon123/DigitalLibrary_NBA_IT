@@ -1,0 +1,23 @@
+﻿@model DigitalLibrary_NBA_IT.Models.USERS
+
+<h2>Register</h2>
+<form action="/User/Register" method="post">
+    @Html.AntiForgeryToken()
+
+    <div>
+        <label>Name:</label>
+        @Html.TextBoxFor(m => m.name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.name)
+    </div>
+    <div>
+        <label>Email:</label>
+        @Html.TextBoxFor(m => m.email, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.email)
+    </div>
+    <div>
+        <label>Password:</label>
+        @Html.PasswordFor(m => m.password, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.password)
+    </div>
+    <button type="submit">Register</button>
+</form>
