@@ -12,24 +12,22 @@ namespace DigitalLibrary_NBA_IT.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Books
+    public partial class USERS
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Books()
+        public USERS()
         {
             this.CART = new HashSet<CART>();
-            this.WAITLIST = new HashSet<WAITLIST>();
         }
     
-        public string Book_ID { get; set; }
-        public string Title { get; set; }
-        public string Publish { get; set; }
-        public string Price { get; set; }
-        public string CopiesAvailable { get; set; }
+        public int user_id { get; set; }
+        public string name { get; set; }
+        public string email { get; set; }
+        public string password { get; set; }
+        public Nullable<System.DateTime> registration_date { get; set; }
+        public bool isAdmin { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CART> CART { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WAITLIST> WAITLIST { get; set; }
     }
 }

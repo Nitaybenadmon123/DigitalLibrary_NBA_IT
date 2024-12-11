@@ -132,7 +132,11 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Models\Books.cs">
+      <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CART.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Digital_Library_NBA_IT.Context.cs">
@@ -153,6 +157,12 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\USERS.cs">
+      <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\WAITLIST.cs">
+      <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -212,6 +222,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

@@ -6,6 +6,12 @@
     <edmx:Diagrams>
       <Diagram DiagramId="6da32750543c40fb8b01fbdd9f077197" Name="Diagram1">
         <EntityTypeShape EntityType="Digital_library_DBModel.Books" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.CART" Width="1.5" PointX="5.625" PointY="0.5" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.WAITLIST" Width="1.5" PointX="5.625" PointY="3.75" />
+        <AssociationConnector Association="Digital_library_DBModel.FK__CART__book_id__787EE5A0" />
+        <AssociationConnector Association="Digital_library_DBModel.FK__WAITLIST__book_i__6FE99F9F" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.USERS" Width="1.5" PointX="0.75" PointY="4.875" />
+        <AssociationConnector Association="Digital_library_DBModel.FK__CART__user_id__778AC167" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
