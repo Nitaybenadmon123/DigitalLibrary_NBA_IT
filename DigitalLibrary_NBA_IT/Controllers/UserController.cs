@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using DigitalLibrary_NBA_IT.Models;
+
 namespace DigitalLibrary_NBA_IT.Controllers
 {
     public class UserController : Controller
     {
         private Digital_library_DBEntities db = new Digital_library_DBEntities();
+
         // GET: Register - הצגת טופס הרשמה
         public ActionResult Register()
         {
             var user = new USERS(); // יצירת אובייקט USERS ריק
             return View(user);
         }
-
 
         // POST: Register - קבלת פרטי משתמש חדש ושמירה במסד הנתונים
         [HttpPost]
@@ -65,5 +64,6 @@ namespace DigitalLibrary_NBA_IT.Controllers
             Session.Clear();
             return RedirectToAction("Login");
         }
-    }
+
+    }       
 }
