@@ -26,12 +26,24 @@
                     <li class="nav-item">
                         <a class="nav-link" href="@Url.Action("Contact", "Home")">Contact</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Register", "User")">Register</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Login", "User")">Login</a>
-                    </li>
+                    @if (Session["UserID"] != null)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Profile", "UserProfile")">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Logout", "User")">Logout</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Register", "User")">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Login", "User")">Login</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>

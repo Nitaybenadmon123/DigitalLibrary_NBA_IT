@@ -18,6 +18,14 @@ namespace DigitalLibrary_NBA_IT
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+
+            routes.MapRoute(
+                name: "UserProfile",
+                url: "UserProfile/{action}/{id}",
+                defaults: new { controller = "UserProfile", action = "Profile", id = UrlParameter.Optional }
+            );
+
+
         }
     }
 }

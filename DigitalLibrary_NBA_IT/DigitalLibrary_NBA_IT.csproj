@@ -126,6 +126,7 @@
     <Compile Include="Controllers\BookController.cs" />
     <Compile Include="Controllers\LibraryDbContext.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\UserProfileController.cs" />
     <Compile Include="Models\Books.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>
@@ -229,6 +230,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\User\Register.cshtml" />
     <Content Include="Views\User\Login.cshtml" />
+    <Content Include="Views\UserProfile\Profile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

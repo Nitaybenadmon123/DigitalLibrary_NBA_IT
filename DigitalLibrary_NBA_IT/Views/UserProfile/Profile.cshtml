@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewBag.Title = "Profile";
+}
+
+@model DigitalLibrary_NBA_IT.Models.USERS
+
+<h2>User Profile</h2>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4>User Details</h4>
+    </div>
+    <div class="card-body">
+        <p><strong>User ID:</strong> @Model.user_id</p>
+        <p><strong>Name:</strong> @Model.name</p>
+        <p><strong>Email:</strong> @Model.email</p>
+    </div>
+</div>
+
+<hr />
+
+<h4>Change Password</h4>
+<form action="/UserProfile/ChangePassword" method="post">
+    @Html.AntiForgeryToken()
+
+    <div>
+        <label>New Password:</label>
+        <input name="newPassword" type="password" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Change Password</button>
+</form>
+
+@if (ViewBag.Message != null)
+{
+    <p style="color: green;">@ViewBag.Message</p>
+}
+
