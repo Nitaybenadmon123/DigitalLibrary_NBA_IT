@@ -2,30 +2,53 @@
     ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Welcome to the Digital Library</h1>
+    <div class="row">
+        <!-- Example books with dynamic content -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Book Title">
+                <div class="card-body">
+                    <h5 class="card-title">Book Title 1</h5>
+                    <p class="card-text">Author: Author Name</p>
+                    <p class="card-text">Genre: Fiction</p>
+                    <p class="card-text">Age Limit: 8+</p>
+                    <p class="card-text">Copies Available: 3</p>
+                    <p class="card-text">Price: <span class="text-muted text-decoration-line-through">$12.00</span> $10.00</p>
+                    <a href="#" class="btn btn-primary">Buy</a>
+                    <a href="#" class="btn btn-secondary">Borrow</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Book Title">
+                <div class="card-body">
+                    <h5 class="card-title">Book Title 2</h5>
+                    <p class="card-text">Author: Author Name</p>
+                    <p class="card-text">Genre: Non-Fiction</p>
+                    <p class="card-text">Age Limit: 18+</p>
+                    <p class="card-text">Copies Available: 3</p>
+                    <p class="card-text">Price: <span class="text-muted text-decoration-line-through">$20.00</span> $15.00</p>
+                    <a href="#" class="btn btn-primary">Buy</a>
+                    <a href="#" class="btn btn-secondary">Borrow</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Book Title">
+                <div class="card-body">
+                    <h5 class="card-title">Book Title 3</h5>
+                    <p class="card-text">Author: Author Name</p>
+                    <p class="card-text">Genre: Mystery</p>
+                    <p class="card-text">Age Limit: 12+</p>
+                    <p class="card-text">Copies Available: Not Available for Borrowing</p>
+                    <p class="card-text">Price: $20.00</p>
+                    <a href="#" class="btn btn-primary">Buy</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
