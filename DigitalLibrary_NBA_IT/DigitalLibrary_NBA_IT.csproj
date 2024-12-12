@@ -123,6 +123,9 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\Book.cs" />
+    <Compile Include="Controllers\BookController.cs" />
+    <Compile Include="Controllers\LibraryDbContext.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Models\Books.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
@@ -230,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Book\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
