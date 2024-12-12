@@ -12,8 +12,10 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // GET: Register - הצגת טופס הרשמה
         public ActionResult Register()
         {
-            return View();
+            var user = new USERS(); // יצירת אובייקט USERS ריק
+            return View(user);
         }
+
 
         // POST: Register - קבלת פרטי משתמש חדש ושמירה במסד הנתונים
         [HttpPost]
