@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using DigitalLibrary_NBA_IT.Models;
 
@@ -8,6 +9,16 @@ namespace DigitalLibrary_NBA_IT.Controllers
     public class UserController : Controller
     {
         private Digital_library_DBEntities db = new Digital_library_DBEntities();
+
+        // בדיקה אם סיסמה עומדת בקריטריונים
+        private bool IsValidPassword(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password)) return false;
+
+            // לפחות 6 תווים, לפחות אות אחת, לפחות ספרה אחת ולפחות תו מיוחד אחד
+            var regex = new Regex(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$");
+            return regex.IsMatch(password);
+        }
 
         // GET: Register - הצגת טופס הרשמה
         public ActionResult Register()
@@ -21,6 +32,12 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(USERS user)
         {
+            if (!IsValidPassword(user.password))
+            {
+                ModelState.AddModelError("password", "Password must be at least 6 characters long, contain at least one letter, one number, and one special character.");
+                return View(user);
+            }
+
             if (ModelState.IsValid)
             {
                 user.registration_date = DateTime.Now; // הוספת תאריך הרשמה
@@ -64,6 +81,5 @@ namespace DigitalLibrary_NBA_IT.Controllers
             Session.Clear();
             return RedirectToAction("Login");
         }
-
-    }       
+    }
 }

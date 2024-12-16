@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Profile";
 }
 
@@ -21,18 +20,33 @@
 <hr />
 
 <h4>Change Password</h4>
+@if (ViewBag.Message != null)
+{
+    <div class="alert @(ViewBag.MessageType == "error" ? "alert-danger" : "alert-success")">
+        @ViewBag.Message
+    </div>
+}
+
 <form action="/UserProfile/ChangePassword" method="post">
     @Html.AntiForgeryToken()
 
-    <div>
-        <label>New Password:</label>
-        <input name="newPassword" type="password" class="form-control" required />
+    <div class="mb-3">
+        <label for="newPassword" class="form-label">New Password:</label>
+        <small class="form-text text-muted">
+            Password must be at least 6 characters long, include one letter, one number, and one special character.
+        </small>
+        <input name="newPassword" id="newPassword" type="password" class="form-control" placeholder="Enter new password" required />
     </div>
     <button type="submit" class="btn btn-primary mt-3">Change Password</button>
 </form>
 
-@if (ViewBag.Message != null)
-{
-    <p style="color: green;">@ViewBag.Message</p>
-}
+<hr />
 
+<h4>Delete Account</h4>
+@using (Html.BeginForm("DeleteAccount", "UserProfile", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+        Delete Account
+    </button>
+}
