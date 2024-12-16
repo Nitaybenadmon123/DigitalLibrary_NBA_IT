@@ -1,54 +1,39 @@
-﻿@{
+﻿@model IEnumerable<DigitalLibrary_NBA_IT.Models.Books>
+
+@{
     ViewBag.Title = "Home Page";
 }
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Welcome to the Digital Library</h1>
     <div class="row">
-        <!-- Example books with dynamic content -->
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Book Title">
-                <div class="card-body">
-                    <h5 class="card-title">Book Title 1</h5>
-                    <p class="card-text">Author: Author Name</p>
-                    <p class="card-text">Genre: Fiction</p>
-                    <p class="card-text">Age Limit: 8+</p>
-                    <p class="card-text">Copies Available: 3</p>
-                    <p class="card-text">Price: <span class="text-muted text-decoration-line-through">$12.00</span> $10.00</p>
-                    <a href="#" class="btn btn-primary">Buy</a>
-                    <a href="#" class="btn btn-secondary">Borrow</a>
+        @foreach (var book in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <!-- טעינת תמונה מגוגל לפי שם הספר -->
+                    <img src="https://via.placeholder.com/300x200?text=@book.Title"
+                         class="card-img-top img-fixed" alt="@book.Title">
+                    <div class="card-body">
+                        <h5 class="card-title">@book.Title</h5>
+                        <p class="card-text">Publisher: @book.Publish</p>
+                        <p class="card-text">Price: $@book.Price</p>
+                        <p class="card-text">Copies Available: @book.CopiesAvailable</p>
+                        <a href="#" class="btn btn-primary">Buy</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Book Title">
-                <div class="card-body">
-                    <h5 class="card-title">Book Title 2</h5>
-                    <p class="card-text">Author: Author Name</p>
-                    <p class="card-text">Genre: Non-Fiction</p>
-                    <p class="card-text">Age Limit: 18+</p>
-                    <p class="card-text">Copies Available: 3</p>
-                    <p class="card-text">Price: <span class="text-muted text-decoration-line-through">$20.00</span> $15.00</p>
-                    <a href="#" class="btn btn-primary">Buy</a>
-                    <a href="#" class="btn btn-secondary">Borrow</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="https://via.placeholder.com/150" class="card-img-top" alt="Book Title">
-                <div class="card-body">
-                    <h5 class="card-title">Book Title 3</h5>
-                    <p class="card-text">Author: Author Name</p>
-                    <p class="card-text">Genre: Mystery</p>
-                    <p class="card-text">Age Limit: 12+</p>
-                    <p class="card-text">Copies Available: Not Available for Borrowing</p>
-                    <p class="card-text">Price: $20.00</p>
-                    <a href="#" class="btn btn-primary">Buy</a>
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </div>
+
+<style>
+    /* עיצוב אחיד לתמונות */
+    .img-fixed {
+        width: 100%; /* התאמה לרוחב הכרטיס */
+        height: 200px; /* גובה קבוע */
+        object-fit: cover; /* שמירה על יחס גובה-רוחב עם חיתוך */
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+</style>
