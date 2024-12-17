@@ -4,16 +4,44 @@
     ViewBag.Title = "Home Page";
 }
 
+<!-- תמונת רקע לכל העמוד -->
+<style>
+    body {
+        background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1920&h=1080&fit=crop');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+    }
+
+    .welcome-text {
+        background-color: rgba(255, 255, 255, 0.8); /* רקע לבן שקוף */
+        color: #000; /* צבע טקסט שחור */
+        padding: 10px 20px;
+        display: inline-block;
+        border-radius: 8px; /* פינות מעוגלות */
+        font-size: 2rem; /* גודל פונט */
+        font-weight: bold; /* טקסט מודגש */
+        text-align: center;
+        margin: 0 auto; /* ממרכז את האלמנט */
+    }
+</style>
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Welcome to the Digital Library</h1>
+    <h1 class="text-center mb-4 welcome-text">Welcome to the Digital Library</h1>
     <div class="row">
         @foreach (var book in Model)
         {
             <div class="col-md-4 mb-4">
                 <div class="card">
-                    <!-- טעינת תמונה מגוגל לפי שם הספר -->
-                    <img src="https://via.placeholder.com/300x200?text=@book.Title"
-                         class="card-img-top img-fixed" alt="@book.Title">
+                    <!-- טעינת התמונה עם טיפול בטעויות והגדרת ברירת מחדל -->
+                    <img src="@(!string.IsNullOrEmpty(book.ImageUrl)
+                                ? book.ImageUrl.Replace("/upload/", "/upload/w_300,h_200,c_fill,dpr_2.0/")
+                                : "https://via.placeholder.com/300x200?text=No+Image")"
+                         class="card-img-top img-fixed"
+                         alt="@book.Title"
+                         onerror="this.onerror=null; this.style.display='none';">
                     <div class="card-body">
                         <h5 class="card-title">@book.Title</h5>
                         <p class="card-text">Publisher: @book.Publish</p>
@@ -30,10 +58,11 @@
 <style>
     /* עיצוב אחיד לתמונות */
     .img-fixed {
-        width: 100%; /* התאמה לרוחב הכרטיס */
+        width: 100%; /* התאמה לרוחב הקלף */
         height: 200px; /* גובה קבוע */
         object-fit: cover; /* שמירה על יחס גובה-רוחב עם חיתוך */
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
+        background-color: #f8f9fa; /* רקע בהיר למקרה של טעינה איטית */
     }
 </style>
