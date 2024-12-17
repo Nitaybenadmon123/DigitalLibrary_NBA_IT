@@ -145,7 +145,15 @@
                 @Html.ValidationMessageFor(m => m.password, null, new { @class = "text-danger" })
             </div>
 
-            <button type="submit" class="btn btn-primary">Register</button>
+            <!-- תיבת סימון להרשמה כמנהל -->
+            <div class="form-check">
+                <input type="checkbox" name="isAdmin" id="isAdmin" class="form-check-input" value="true" />
+                <input type="hidden" name="isAdmin" value="false" />
+                <label for="isAdmin" class="form-check-label">Register as Admin</label>
+            </div>
+
+
+            <button type="submit" class="btn btn-primary mt-3">Register</button>
         </form>
     </div>
 
