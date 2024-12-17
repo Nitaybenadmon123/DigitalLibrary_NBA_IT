@@ -40,6 +40,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
         }
 
         // POST: UserProfile/ChangePassword - שינוי סיסמה מתוך פרופיל המשתמש
+        // POST: UserProfile/ChangePassword - שינוי סיסמה מתוך פרופיל המשתמש
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ChangePassword(string newPassword)
@@ -52,9 +53,9 @@ namespace DigitalLibrary_NBA_IT.Controllers
             // בדיקת תקינות הסיסמה
             if (!IsValidPassword(newPassword))
             {
-                ViewBag.Message = "Password change failed. Your new password must meet the following criteria: " +
-                                  "at least 6 characters, include one letter, one number, and one special character.";
-                ViewBag.MessageType = "error"; // להבחין בין הודעת שגיאה להצלחה
+                TempData["Message"] = "Password change failed. Your new password must meet the following criteria: " +
+                                      "at least 6 characters, include one letter, one number, and one special character.";
+                TempData["MessageType"] = "error";
                 return RedirectToAction("Profile");
             }
 
@@ -66,16 +67,15 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 user.password = newPassword;
                 db.SaveChanges();
 
-                ViewBag.Message = "Password updated successfully.";
-                ViewBag.MessageType = "success"; // הודעת הצלחה
+                TempData["Message"] = "Password updated successfully.";
+                TempData["MessageType"] = "success";
                 return RedirectToAction("Profile");
             }
 
-            ViewBag.Message = "Password change failed. Please try again.";
-            ViewBag.MessageType = "error";
+            TempData["Message"] = "Password change failed. Please try again.";
+            TempData["MessageType"] = "error";
             return RedirectToAction("Profile");
         }
-
 
         // POST: UserProfile/DeleteAccount - מחיקת משתמש
         [HttpPost]
@@ -96,12 +96,15 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 db.SaveChanges();
 
                 Session.Clear(); // נקה את הסשן
-                ViewBag.Message = "Your account has been deleted successfully.";
+                TempData["Message"] = "Your account has been deleted successfully.";
+                TempData["MessageType"] = "success";
                 return RedirectToAction("Register", "User"); // הפניה לעמוד ההרשמה
             }
 
-            ViewBag.Message = "Failed to delete account. Please try again.";
+            TempData["Message"] = "Failed to delete account. Please try again.";
+            TempData["MessageType"] = "error";
             return RedirectToAction("Profile");
         }
+
     }
 }

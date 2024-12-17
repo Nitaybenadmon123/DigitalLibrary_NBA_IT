@@ -20,10 +20,15 @@
 <hr />
 
 <h4>Change Password</h4>
-@if (ViewBag.Message != null)
+
+@if (TempData["Message"] != null)
 {
-    <div class="alert @(ViewBag.MessageType == "error" ? "alert-danger" : "alert-success")">
-        @ViewBag.Message
+    var messageType = TempData["MessageType"] != null && TempData["MessageType"].ToString() == "error"
+                     ? "alert-danger"
+                     : "alert-success";
+
+    <div class="alert @messageType">
+        @TempData["Message"]
     </div>
 }
 
