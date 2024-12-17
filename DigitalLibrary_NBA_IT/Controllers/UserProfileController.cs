@@ -40,7 +40,6 @@ namespace DigitalLibrary_NBA_IT.Controllers
         }
 
         // POST: UserProfile/ChangePassword - שינוי סיסמה מתוך פרופיל המשתמש
-        // POST: UserProfile/ChangePassword - שינוי סיסמה מתוך פרופיל המשתמש
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ChangePassword(string newPassword)

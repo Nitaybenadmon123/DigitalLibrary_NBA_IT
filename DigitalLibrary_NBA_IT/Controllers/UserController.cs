@@ -30,7 +30,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // POST: Register - קבלת פרטי משתמש חדש ושמירה במסד הנתונים
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(USERS user)
+        public ActionResult Register(USERS user, bool isAdmin)
         {
             if (!IsValidPassword(user.password))
             {
@@ -40,15 +40,17 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             if (ModelState.IsValid)
             {
-                user.registration_date = DateTime.Now; // הוספת תאריך הרשמה
-                user.isAdmin = false; // כברירת מחדל המשתמש אינו מנהל
+                user.registration_date = DateTime.Now;
+                user.isAdmin = isAdmin; // הגדרה לפי תיבת הסימון
                 db.USERS.Add(user);
                 db.SaveChanges();
 
-                return RedirectToAction("Login"); // הפניה למסך כניסה
+                return RedirectToAction("Login"); // הפניה לעמוד התחברות
             }
+
             return View(user);
         }
+
 
         // GET: Login - הצגת טופס התחברות
         public ActionResult Login()
@@ -59,7 +61,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // POST: Login - בדיקת פרטי התחברות
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string email, string password)
+        public ActionResult Login(string email, string password, bool isAdminLogin = false)
         {
             var user = db.USERS.FirstOrDefault(u => u.email == email && u.password == password);
 
@@ -68,10 +70,27 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 Session["UserID"] = user.user_id;
                 Session["UserName"] = user.name;
                 Session["IsAdmin"] = user.isAdmin;
-                return RedirectToAction("Index", "Home"); // העברת המשתמש לדף הבית
+
+                // הפניה לפי סוג המשתמש
+                if (user.isAdmin && isAdminLogin)
+                {
+                    return RedirectToAction("AdminDashboard"); // הפניה לממשק מנהל
+                }
+                return RedirectToAction("Index", "Home"); // הפניה לממשק רגיל
             }
 
-            ViewBag.Message = "Invalid email or password";
+            ViewBag.Message = "Invalid email or password.";
+            return View();
+        }
+
+        // GET: AdminDashboard - עמוד מנהל
+        public ActionResult AdminDashboard()
+        {
+            if (Session["IsAdmin"] == null || !(bool)Session["IsAdmin"])
+            {
+                return RedirectToAction("Login"); // הפניה אם המשתמש לא מנהל
+            }
+
             return View();
         }
 
