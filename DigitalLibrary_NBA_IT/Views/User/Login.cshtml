@@ -93,8 +93,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     @*<li class="nav-item">
-                        @Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link" })
-                    </li>*@
+                            @Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link" })
+                        </li>*@
                     <li class="nav-item">
                         @Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link" })
                     </li>
@@ -111,7 +111,6 @@
             </div>
         </div>
     </nav>
-
     <div class="login-container shadow-lg">
         <h2>Digital Library Login</h2>
         <form action="/User/Login" method="post">
@@ -125,19 +124,23 @@
                 <label for="password" class="form-label">Password:</label>
                 <input name="password" id="password" type="password" class="form-control" placeholder="Enter your password" required />
             </div>
-            <!-- תיבת סימון להתחברות כמנהל -->
             <div class="form-check">
-                <input type="checkbox" name="isAdminLogin" id="isAdminLogin" class="form-check-input" />
+                <input type="hidden" name="isAdminLogin" value="false" /> <!-- ערך ברירת מחדל -->
+                <input type="checkbox" name="isAdminLogin" id="isAdminLogin" value="true" class="form-check-input" />
                 <label for="isAdminLogin" class="form-check-label">Login as Admin</label>
             </div>
+
+
             <button type="submit" class="btn btn-primary mt-3">Login</button>
         </form>
 
-        @if (ViewBag.Message != null)
+        @if (TempData["Message"] != null)
         {
-            <div class="error-message">@ViewBag.Message</div>
+            <div class="error-message">@TempData["Message"]</div>
         }
+
     </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

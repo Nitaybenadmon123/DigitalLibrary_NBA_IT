@@ -30,26 +30,31 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // POST: Register - קבלת פרטי משתמש חדש ושמירה במסד הנתונים
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(USERS user, bool isAdmin)
+        public ActionResult Register(USERS user)
         {
+            // קבלת הערך של תיבת הסימון
+            bool isAdmin = Request.Form["isAdmin"] == "true";
+
             if (!IsValidPassword(user.password))
             {
-                ModelState.AddModelError("password", "Password must be at least 6 characters long, contain at least one letter, one number, and one special character.");
+                ModelState.AddModelError("password", "Password must meet the criteria.");
                 return View(user);
             }
 
             if (ModelState.IsValid)
             {
                 user.registration_date = DateTime.Now;
-                user.isAdmin = isAdmin; // הגדרה לפי תיבת הסימון
+                user.isAdmin = isAdmin; // הגדרת האם הוא מנהל או לא
                 db.USERS.Add(user);
                 db.SaveChanges();
 
-                return RedirectToAction("Login"); // הפניה לעמוד התחברות
+                return RedirectToAction("Login");
             }
 
             return View(user);
         }
+
+
 
 
         // GET: Login - הצגת טופס התחברות
@@ -63,36 +68,74 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(string email, string password, bool isAdminLogin = false)
         {
+            // הדפסה לבדיקת הערכים שהתקבלו
+            Console.WriteLine($"isAdminLogin: {isAdminLogin}");
+            Console.WriteLine($"Email: {email}, Password: {password}");
+
+            // בדוק את המשתמש מהמסד
             var user = db.USERS.FirstOrDefault(u => u.email == email && u.password == password);
 
             if (user != null)
             {
-                Session["UserID"] = user.user_id;
-                Session["UserName"] = user.name;
-                Session["IsAdmin"] = user.isAdmin;
+                Console.WriteLine($"User found: {user.name}, isAdmin: {user.isAdmin}");
 
-                // הפניה לפי סוג המשתמש
-                if (user.isAdmin && isAdminLogin)
+                if (isAdminLogin)
                 {
-                    return RedirectToAction("AdminDashboard"); // הפניה לממשק מנהל
+                    // התחברות כמנהל
+                    if (user.isAdmin)
+                    {
+                        Session["UserID"] = user.user_id;
+                        Session["UserName"] = user.name;
+                        Session["IsAdmin"] = true;
+                        TempData["Message"] = "Welcome, Admin!";
+                        return RedirectToAction("AdminDashboard");
+                    }
+                    else
+                    {
+                        TempData["Message"] = "You do not have admin privileges.";
+                        return RedirectToAction("Login");
+                    }
                 }
-                return RedirectToAction("Index", "Home"); // הפניה לממשק רגיל
+                else
+                {
+                    // התחברות רגילה
+                    if (user.isAdmin)
+                    {
+                        TempData["Message"] = "Admins must log in using the 'Login as Admin' option.";
+                        return RedirectToAction("Login");
+                    }
+                    else
+                    {
+                        Session["UserID"] = user.user_id;
+                        Session["UserName"] = user.name;
+                        Session["IsAdmin"] = false;
+                        TempData["Message"] = "Welcome, User!";
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
             }
 
-            ViewBag.Message = "Invalid email or password.";
-            return View();
+            TempData["Message"] = "Invalid email or password.";
+            return RedirectToAction("Login");
         }
+
+
+
+
+
 
         // GET: AdminDashboard - עמוד מנהל
         public ActionResult AdminDashboard()
         {
             if (Session["IsAdmin"] == null || !(bool)Session["IsAdmin"])
             {
-                return RedirectToAction("Login"); // הפניה אם המשתמש לא מנהל
+                TempData["Message"] = "Access denied. Admins only.";
+                return RedirectToAction("Login");
             }
 
             return View();
         }
+
 
         // Logout - יציאה מהמערכת
         public ActionResult Logout()
