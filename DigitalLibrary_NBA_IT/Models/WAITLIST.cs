@@ -16,10 +16,13 @@ namespace DigitalLibrary_NBA_IT.Models
     {
         public int waitlist_id { get; set; }
         public int user_id { get; set; }
+        public object User_ID { get; internal set; }
         public string book_id { get; set; }
+        public string Book_ID { get; internal set; }
         public int position { get; set; }
         public Nullable<System.DateTime> date_added { get; set; }
     
         public virtual Books Books { get; set; }
+        public object DateAdded { get; internal set; }
     }
 }

@@ -27,30 +27,66 @@
         text-align: center;
         margin: 0 auto; /* ממרכז את האלמנט */
     }
+
+    .search-bar {
+        margin-bottom: 20px;
+    }
 </style>
+
 <div class="container mt-5">
     <h1 class="text-center mb-4 welcome-text">Welcome to the Digital Library</h1>
-    <div class="row">
-        @foreach (var book in Model)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <!-- טעינת התמונה עם טיפול בטעויות והגדרת ברירת מחדל -->
-                    <img src="@(!string.IsNullOrEmpty(book.ImageUrl)
-                                ? book.ImageUrl.Replace("/upload/", "/upload/w_300,h_200,c_fill,dpr_2.0/")
-                                : "https://via.placeholder.com/300x200?text=No+Image")"
-                         class="card-img-top img-fixed"
-                         alt="@book.Title"
-                         onerror="this.onerror=null; this.style.display='none';">
-                    <div class="card-body">
-                        <h5 class="card-title">@book.Title</h5>
-                        <p class="card-text">Publisher: @book.Publish</p>
-                        <p class="card-text">Price: $@book.Price</p>
-                        <p class="card-text">Copies Available: @book.CopiesAvailable</p>
-                        <a href="#" class="btn btn-primary">Buy</a>
-                    </div>
+
+    <!-- שורת חיפוש -->
+    <div class="container mt-3 mb-4">
+        <form method="get" action="@Url.Action("Index", "Home")">
+            <div class="input-group search-bar">
+                <input type="text" name="query" class="form-control" placeholder="Search for a book by title, author, or publisher..." value="@ViewBag.Query" />
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Search</button>
                 </div>
             </div>
+        </form>
+    </div>
+
+    <!-- תצוגת הספרים -->
+    <div class="row">
+        @if (Model.Any())
+        {
+            foreach (var book in Model)
+            {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <!-- טעינת התמונה עם טיפול בטעויות והגדרת ברירת מחדל -->
+                <img src="@(!string.IsNullOrEmpty(book.ImageUrl)
+                                        ? book.ImageUrl.Replace("/upload/", "/upload/w_300,h_200,c_fill,dpr_2.0/")
+                                        : "https://via.placeholder.com/300x200?text=No+Image")"
+                     class="card-img-top img-fixed"
+                     alt="@book.Title"
+                     onerror="this.onerror=null; this.style.display='none';">
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text">Publisher: @book.Publish</p>
+                    <p class="card-text">Price: $@book.Price</p>
+                    <p class="card-text">Copies Available: @book.CopiesAvailable</p>
+                    <a href="@Url.Action("Buy", "Home", new { id = book.Book_ID })" class="btn btn-primary">Buy</a>
+                    @if (int.Parse(book.CopiesAvailable) > 0)
+                            {
+                    <a href="@Url.Action("Borrow", "Home", new { id = book.Book_ID })" class="btn btn-secondary">Borrow</a>
+                            }
+                            else
+                            {
+                    <span class="text-danger">Not Available</span>
+                            }
+                </div>
+            </div>
+        </div>
+            }
+        }
+        else
+        {
+        <div class="col-12">
+            <p class="text-center text-danger">No books found matching your search.</p>
+        </div>
         }
     </div>
 </div>
