@@ -14,6 +14,7 @@
           <Property Name="Publish" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="Price" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="CopiesAvailable" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="ImageUrl" Type="varchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="CART">
           <Key>
@@ -24,6 +25,28 @@
           <Property Name="book_id" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="quantity" Type="int" Nullable="false" />
           <Property Name="date_added" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Reviews">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="User_ID" Type="int" Nullable="false" />
+          <Property Name="Book_ID" Type="nchar" MaxLength="10" Nullable="false" />
+          <Property Name="Rating" Type="int" />
+          <Property Name="Feedback" Type="nvarchar(max)" />
+          <Property Name="ReviewDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserLibrary">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="User_ID" Type="int" />
+          <Property Name="Book_ID" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PurchaseDate" Type="datetime" Nullable="false" />
+          <Property Name="IsBorrowed" Type="bit" Nullable="false" />
+          <Property Name="ExpiryDate" Type="datetime" />
         </EntityType>
         <EntityType Name="USERS">
           <Key>
@@ -38,13 +61,12 @@
         </EntityType>
         <EntityType Name="WAITLIST">
           <Key>
-            <PropertyRef Name="waitlist_id" />
+            <PropertyRef Name="ID" />
           </Key>
-          <Property Name="waitlist_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="user_id" Type="int" Nullable="false" />
-          <Property Name="book_id" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="position" Type="int" Nullable="false" />
-          <Property Name="date_added" Type="datetime" />
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Book_ID" Type="nchar" MaxLength="10" />
+          <Property Name="User_ID" Type="int" />
+          <Property Name="DateAdded" Type="datetime" />
         </EntityType>
         <Association Name="FK__CART__book_id__787EE5A0">
           <End Role="Books" Type="Self.Books" Multiplicity="1" />
@@ -70,21 +92,79 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__WAITLIST__book_i__6FE99F9F">
-          <End Role="Books" Type="Self.Books" Multiplicity="1" />
+        <Association Name="FK_Reviews_Books">
+          <End Role="Books" Type="Self.Books" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Reviews" Type="Self.Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Books">
+              <PropertyRef Name="Book_ID" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="Book_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Reviews_Users">
+          <End Role="USERS" Type="Self.USERS" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Reviews" Type="Self.Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USERS">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="User_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserLibrary_Users">
+          <End Role="USERS" Type="Self.USERS" Multiplicity="0..1" />
+          <End Role="UserLibrary" Type="Self.UserLibrary" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USERS">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="UserLibrary">
+              <PropertyRef Name="User_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Waitlist_Books">
+          <End Role="Books" Type="Self.Books" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="WAITLIST" Type="Self.WAITLIST" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Books">
               <PropertyRef Name="Book_ID" />
             </Principal>
             <Dependent Role="WAITLIST">
-              <PropertyRef Name="book_id" />
+              <PropertyRef Name="Book_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Waitlist_Users">
+          <End Role="USERS" Type="Self.USERS" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="WAITLIST" Type="Self.WAITLIST" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USERS">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="WAITLIST">
+              <PropertyRef Name="User_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="Digital_library_DBModelStoreContainer">
           <EntitySet Name="Books" EntityType="Self.Books" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CART" EntityType="Self.CART" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Reviews" EntityType="Self.Reviews" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserLibrary" EntityType="Self.UserLibrary" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="USERS" EntityType="Self.USERS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WAITLIST" EntityType="Self.WAITLIST" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK__CART__book_id__787EE5A0" Association="Self.FK__CART__book_id__787EE5A0">
@@ -95,8 +175,24 @@
             <End Role="USERS" EntitySet="USERS" />
             <End Role="CART" EntitySet="CART" />
           </AssociationSet>
-          <AssociationSet Name="FK__WAITLIST__book_i__6FE99F9F" Association="Self.FK__WAITLIST__book_i__6FE99F9F">
+          <AssociationSet Name="FK_Reviews_Books" Association="Self.FK_Reviews_Books">
             <End Role="Books" EntitySet="Books" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Reviews_Users" Association="Self.FK_Reviews_Users">
+            <End Role="USERS" EntitySet="USERS" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserLibrary_Users" Association="Self.FK_UserLibrary_Users">
+            <End Role="USERS" EntitySet="USERS" />
+            <End Role="UserLibrary" EntitySet="UserLibrary" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Waitlist_Books" Association="Self.FK_Waitlist_Books">
+            <End Role="Books" EntitySet="Books" />
+            <End Role="WAITLIST" EntitySet="WAITLIST" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Waitlist_Users" Association="Self.FK_Waitlist_Users">
+            <End Role="USERS" EntitySet="USERS" />
             <End Role="WAITLIST" EntitySet="WAITLIST" />
           </AssociationSet>
         </EntityContainer>
@@ -104,36 +200,56 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="Digital_library_DBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Books">
-          <Key>
-            <PropertyRef Name="Book_ID" />
-          </Key>
-          <Property Name="Book_ID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Publish" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Price" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="CopiesAvailable" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="CART" Relationship="Digital_library_DBModel.FK__CART__book_id__787EE5A0" FromRole="Books" ToRole="CART" />
-          <NavigationProperty Name="WAITLIST" Relationship="Digital_library_DBModel.FK__WAITLIST__book_i__6FE99F9F" FromRole="Books" ToRole="WAITLIST" />
-        </EntityType>
         <EntityContainer Name="Digital_library_DBEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Books" EntityType="Self.Books" />
+          <EntitySet Name="Books" EntityType="Digital_library_DBModel.Books" />
           <EntitySet Name="CART" EntityType="Digital_library_DBModel.CART" />
+          <EntitySet Name="UserLibrary" EntityType="Digital_library_DBModel.UserLibrary" />
+          <EntitySet Name="USERS" EntityType="Digital_library_DBModel.USERS" />
           <EntitySet Name="WAITLIST" EntityType="Digital_library_DBModel.WAITLIST" />
           <AssociationSet Name="FK__CART__book_id__787EE5A0" Association="Digital_library_DBModel.FK__CART__book_id__787EE5A0">
             <End Role="Books" EntitySet="Books" />
             <End Role="CART" EntitySet="CART" />
           </AssociationSet>
-          <AssociationSet Name="FK__WAITLIST__book_i__6FE99F9F" Association="Digital_library_DBModel.FK__WAITLIST__book_i__6FE99F9F">
+          <AssociationSet Name="FK_Waitlist_Books" Association="Digital_library_DBModel.FK_Waitlist_Books">
             <End Role="Books" EntitySet="Books" />
             <End Role="WAITLIST" EntitySet="WAITLIST" />
           </AssociationSet>
-          <EntitySet Name="USERS" EntityType="Digital_library_DBModel.USERS" />
           <AssociationSet Name="FK__CART__user_id__778AC167" Association="Digital_library_DBModel.FK__CART__user_id__778AC167">
             <End Role="USERS" EntitySet="USERS" />
             <End Role="CART" EntitySet="CART" />
           </AssociationSet>
+          <AssociationSet Name="FK_UserLibrary_Users" Association="Digital_library_DBModel.FK_UserLibrary_Users">
+            <End Role="USERS" EntitySet="USERS" />
+            <End Role="UserLibrary" EntitySet="UserLibrary" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Waitlist_Users" Association="Digital_library_DBModel.FK_Waitlist_Users">
+            <End Role="USERS" EntitySet="USERS" />
+            <End Role="WAITLIST" EntitySet="WAITLIST" />
+          </AssociationSet>
+          <EntitySet Name="Reviews" EntityType="Digital_library_DBModel.Reviews" />
+          <AssociationSet Name="FK_Reviews_Books" Association="Digital_library_DBModel.FK_Reviews_Books">
+            <End Role="Books" EntitySet="Books" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Reviews_Users" Association="Digital_library_DBModel.FK_Reviews_Users">
+            <End Role="USERS" EntitySet="USERS" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Books">
+          <Key>
+            <PropertyRef Name="Book_ID" />
+          </Key>
+          <Property Name="Book_ID" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Publish" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Price" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="CopiesAvailable" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="ImageUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CART" Relationship="Digital_library_DBModel.FK__CART__book_id__787EE5A0" FromRole="Books" ToRole="CART" />
+          <NavigationProperty Name="WAITLIST" Relationship="Digital_library_DBModel.FK_Waitlist_Books" FromRole="Books" ToRole="WAITLIST" />
+          <NavigationProperty Name="Reviews" Relationship="Digital_library_DBModel.FK_Reviews_Books" FromRole="Books" ToRole="Reviews" />
+        </EntityType>
         <EntityType Name="CART">
           <Key>
             <PropertyRef Name="cart_id" />
@@ -146,16 +262,43 @@
           <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK__CART__book_id__787EE5A0" FromRole="CART" ToRole="Books" />
           <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK__CART__user_id__778AC167" FromRole="CART" ToRole="USERS" />
         </EntityType>
+        <EntityType Name="UserLibrary">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="User_ID" Type="Int32" />
+          <Property Name="Book_ID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PurchaseDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsBorrowed" Type="Boolean" Nullable="false" />
+          <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK_UserLibrary_Users" FromRole="UserLibrary" ToRole="USERS" />
+        </EntityType>
+        <EntityType Name="USERS">
+          <Key>
+            <PropertyRef Name="user_id" />
+          </Key>
+          <Property Name="user_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="registration_date" Type="DateTime" Precision="3" />
+          <Property Name="isAdmin" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="CART" Relationship="Digital_library_DBModel.FK__CART__user_id__778AC167" FromRole="USERS" ToRole="CART" />
+          <NavigationProperty Name="UserLibrary" Relationship="Digital_library_DBModel.FK_UserLibrary_Users" FromRole="USERS" ToRole="UserLibrary" />
+          <NavigationProperty Name="WAITLIST" Relationship="Digital_library_DBModel.FK_Waitlist_Users" FromRole="USERS" ToRole="WAITLIST" />
+          <NavigationProperty Name="Reviews" Relationship="Digital_library_DBModel.FK_Reviews_Users" FromRole="USERS" ToRole="Reviews" />
+        </EntityType>
         <EntityType Name="WAITLIST">
           <Key>
-            <PropertyRef Name="waitlist_id" />
+            <PropertyRef Name="ID" />
           </Key>
-          <Property Name="waitlist_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="user_id" Type="Int32" Nullable="false" />
-          <Property Name="book_id" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="position" Type="Int32" Nullable="false" />
-          <Property Name="date_added" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK__WAITLIST__book_i__6FE99F9F" FromRole="WAITLIST" ToRole="Books" />
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Book_ID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="User_ID" Type="Int32" />
+          <Property Name="DateAdded" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK_Waitlist_Books" FromRole="WAITLIST" ToRole="Books" />
+          <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK_Waitlist_Users" FromRole="WAITLIST" ToRole="USERS" />
         </EntityType>
         <Association Name="FK__CART__book_id__787EE5A0">
           <End Type="Digital_library_DBModel.Books" Role="Books" Multiplicity="1" />
@@ -169,30 +312,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__WAITLIST__book_i__6FE99F9F">
-          <End Type="Digital_library_DBModel.Books" Role="Books" Multiplicity="1" />
+        <Association Name="FK_Waitlist_Books">
+          <End Type="Digital_library_DBModel.Books" Role="Books" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Type="Digital_library_DBModel.WAITLIST" Role="WAITLIST" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Books">
               <PropertyRef Name="Book_ID" />
             </Principal>
             <Dependent Role="WAITLIST">
-              <PropertyRef Name="book_id" />
+              <PropertyRef Name="Book_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="USERS">
-          <Key>
-            <PropertyRef Name="user_id" />
-          </Key>
-          <Property Name="user_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="password" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="registration_date" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="CART" Relationship="Digital_library_DBModel.FK__CART__user_id__778AC167" FromRole="USERS" ToRole="CART" />
-          <Property Name="isAdmin" Type="Boolean" Nullable="false" />
-        </EntityType>
         <Association Name="FK__CART__user_id__778AC167">
           <End Type="Digital_library_DBModel.USERS" Role="USERS" Multiplicity="1" />
           <End Type="Digital_library_DBModel.CART" Role="CART" Multiplicity="*" />
@@ -205,6 +338,73 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_UserLibrary_Users">
+          <End Type="Digital_library_DBModel.USERS" Role="USERS" Multiplicity="0..1" />
+          <End Type="Digital_library_DBModel.UserLibrary" Role="UserLibrary" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USERS">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="UserLibrary">
+              <PropertyRef Name="User_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Waitlist_Users">
+          <End Type="Digital_library_DBModel.USERS" Role="USERS" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="Digital_library_DBModel.WAITLIST" Role="WAITLIST" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USERS">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="WAITLIST">
+              <PropertyRef Name="User_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Reviews">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="User_ID" Type="Int32" Nullable="false" />
+          <Property Name="Book_ID" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Rating" Type="Int32" />
+          <Property Name="Feedback" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ReviewDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK_Reviews_Books" FromRole="Reviews" ToRole="Books" />
+          <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK_Reviews_Users" FromRole="Reviews" ToRole="USERS" />
+        </EntityType>
+        <Association Name="FK_Reviews_Books">
+          <End Type="Digital_library_DBModel.Books" Role="Books" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="Digital_library_DBModel.Reviews" Role="Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Books">
+              <PropertyRef Name="Book_ID" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="Book_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Reviews_Users">
+          <End Type="Digital_library_DBModel.USERS" Role="USERS" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="Digital_library_DBModel.Reviews" Role="Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USERS">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="User_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -214,11 +414,12 @@
           <EntitySetMapping Name="Books">
             <EntityTypeMapping TypeName="Digital_library_DBModel.Books">
               <MappingFragment StoreEntitySet="Books">
-                <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="Publish" ColumnName="Publish" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="ImageUrl" ColumnName="ImageUrl" />
                 <ScalarProperty Name="CopiesAvailable" ColumnName="CopiesAvailable" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Publish" ColumnName="Publish" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -233,14 +434,15 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="WAITLIST">
-            <EntityTypeMapping TypeName="Digital_library_DBModel.WAITLIST">
-              <MappingFragment StoreEntitySet="WAITLIST">
-                <ScalarProperty Name="date_added" ColumnName="date_added" />
-                <ScalarProperty Name="position" ColumnName="position" />
-                <ScalarProperty Name="book_id" ColumnName="book_id" />
-                <ScalarProperty Name="user_id" ColumnName="user_id" />
-                <ScalarProperty Name="waitlist_id" ColumnName="waitlist_id" />
+          <EntitySetMapping Name="UserLibrary">
+            <EntityTypeMapping TypeName="Digital_library_DBModel.UserLibrary">
+              <MappingFragment StoreEntitySet="UserLibrary">
+                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
+                <ScalarProperty Name="IsBorrowed" ColumnName="IsBorrowed" />
+                <ScalarProperty Name="PurchaseDate" ColumnName="PurchaseDate" />
+                <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
+                <ScalarProperty Name="User_ID" ColumnName="User_ID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -253,6 +455,28 @@
                 <ScalarProperty Name="email" ColumnName="email" />
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="user_id" ColumnName="user_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WAITLIST">
+            <EntityTypeMapping TypeName="Digital_library_DBModel.WAITLIST">
+              <MappingFragment StoreEntitySet="WAITLIST">
+                <ScalarProperty Name="DateAdded" ColumnName="DateAdded" />
+                <ScalarProperty Name="User_ID" ColumnName="User_ID" />
+                <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Reviews">
+            <EntityTypeMapping TypeName="Digital_library_DBModel.Reviews">
+              <MappingFragment StoreEntitySet="Reviews">
+                <ScalarProperty Name="ReviewDate" ColumnName="ReviewDate" />
+                <ScalarProperty Name="Feedback" ColumnName="Feedback" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
+                <ScalarProperty Name="User_ID" ColumnName="User_ID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

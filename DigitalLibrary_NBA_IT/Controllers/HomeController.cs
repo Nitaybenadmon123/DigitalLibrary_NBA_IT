@@ -73,7 +73,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
             var waitlist = new WAITLIST
             {
                 Book_ID = bookId,
-                User_ID = GetCurrentUserId(), // פונקציה לזיהוי המשתמש
+                //User_ID = GetCurrentUserId(), // פונקציה לזיהוי המשתמש
                 DateAdded = DateTime.Now
             };
 

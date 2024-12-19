@@ -152,6 +152,12 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Reviews.cs">
+      <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserLibrary.cs">
+      <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\USERS.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>

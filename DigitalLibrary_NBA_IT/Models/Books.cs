@@ -11,7 +11,7 @@ namespace DigitalLibrary_NBA_IT.Models
 {
     using System;
     using System.Collections.Generic;
-
+    
     public partial class Books
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -19,20 +19,21 @@ namespace DigitalLibrary_NBA_IT.Models
         {
             this.CART = new HashSet<CART>();
             this.WAITLIST = new HashSet<WAITLIST>();
+            this.Reviews = new HashSet<Reviews>();
         }
-
+    
         public string Book_ID { get; set; }
         public string Title { get; set; }
         public string Publish { get; set; }
         public string Price { get; set; }
         public string CopiesAvailable { get; set; }
-
-        // עמודה חדשה לשמירת קישורים לתמונות
         public string ImageUrl { get; set; }
-
+    
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CART> CART { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WAITLIST> WAITLIST { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Reviews> Reviews { get; set; }
     }
 }

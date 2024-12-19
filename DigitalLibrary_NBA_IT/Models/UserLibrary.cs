@@ -12,14 +12,15 @@ namespace DigitalLibrary_NBA_IT.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class WAITLIST
+    public partial class UserLibrary
     {
         public int ID { get; set; }
-        public string Book_ID { get; set; }
         public Nullable<int> User_ID { get; set; }
-        public Nullable<System.DateTime> DateAdded { get; set; }
+        public string Book_ID { get; set; }
+        public System.DateTime PurchaseDate { get; set; }
+        public bool IsBorrowed { get; set; }
+        public Nullable<System.DateTime> ExpiryDate { get; set; }
     
-        public virtual Books Books { get; set; }
         public virtual USERS USERS { get; set; }
     }
 }
