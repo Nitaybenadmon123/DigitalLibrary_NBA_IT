@@ -10,7 +10,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
     {
         private Digital_library_DBEntities db = new Digital_library_DBEntities();
 
-        // בדיקת תקינות סיסמה
+        // בדיקה אם סיסמה עומדת בקריטריונים
         private bool IsValidPassword(string password)
         {
             if (string.IsNullOrWhiteSpace(password)) return false;
@@ -34,8 +34,20 @@ namespace DigitalLibrary_NBA_IT.Controllers
             // בדיקה אם הסיסמה עומדת בקריטריונים
             if (!IsValidPassword(user.password))
             {
-                ModelState.AddModelError("password", "Password must meet the required criteria.");
-                return View(user);
+                TempData["Message"] = "Password must be at least 6 characters, include one number, and one special character.";
+                return RedirectToAction("Register");
+            }
+
+            if (db.USERS.Any(u => u.email == user.email))
+            {
+                TempData["Message"] = "The email address is already in use. Please try another.";
+                return RedirectToAction("Register");
+            }
+
+            if (db.USERS.Any(u => u.name == user.name))
+            {
+                TempData["Message"] = "The user name is already in use. Please try another.";
+                return RedirectToAction("Register");
             }
 
             if (ModelState.IsValid)
@@ -44,7 +56,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 user.isAdmin = false; // משתמש רגיל כברירת מחדל
                 db.USERS.Add(user);
                 db.SaveChanges();
-
+                TempData["Message"] = "Registration successful! Please log in.";
                 return RedirectToAction("Login");
             }
 
@@ -60,48 +72,25 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // POST: Login - בדיקת פרטי התחברות
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string email, string password, string secretKey = null)
+        public ActionResult Login(string email, string password)
         {
-            string adminSecretKey = System.Configuration.ConfigurationManager.AppSettings["AdminSecretKey"];
-
-            // בדוק את המשתמש מהמסד
             var user = db.USERS.FirstOrDefault(u => u.email == email && u.password == password);
 
             if (user != null)
             {
-                if (!string.IsNullOrEmpty(secretKey))
+                if (user.isAdmin)
                 {
-                    // התחברות מנהל
-                    if (user.isAdmin && secretKey == adminSecretKey)
-                    {
-                        Session["UserID"] = user.user_id;
-                        Session["UserName"] = user.name;
-                        Session["IsAdmin"] = true;
-                        TempData["Message"] = "Welcome, Admin!";
-                        return RedirectToAction("AdminDashboard");
-                    }
-                    else
-                    {
-                        TempData["Message"] = "Invalid admin credentials.";
-                        return RedirectToAction("Login");
-                    }
+                    Session["UserID"] = user.user_id;
+                    Session["UserName"] = user.name;
+                    Session["IsAdmin"] = true;
+                    return RedirectToAction("AdminDashboard");
                 }
                 else
                 {
-                    // התחברות משתמש רגיל
-                    if (user.isAdmin)
-                    {
-                        TempData["Message"] = "Admins must use the Admin Secret Key to log in.";
-                        return RedirectToAction("Login");
-                    }
-                    else
-                    {
-                        Session["UserID"] = user.user_id;
-                        Session["UserName"] = user.name;
-                        Session["IsAdmin"] = false;
-                        TempData["Message"] = "Welcome, User!";
-                        return RedirectToAction("Index", "Home");
-                    }
+                    Session["UserID"] = user.user_id;
+                    Session["UserName"] = user.name;
+                    Session["IsAdmin"] = false;
+                    return RedirectToAction("Index", "Home");
                 }
             }
 
