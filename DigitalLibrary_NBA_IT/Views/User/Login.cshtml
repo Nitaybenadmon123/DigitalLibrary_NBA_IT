@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login | Digital Library</title>
-    <!-- הוספת Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
@@ -92,9 +91,6 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    @*<li class="nav-item">
-                            @Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link" })
-                        </li>*@
                     <li class="nav-item">
                         @Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link" })
                     </li>
@@ -124,13 +120,10 @@
                 <label for="password" class="form-label">Password:</label>
                 <input name="password" id="password" type="password" class="form-control" placeholder="Enter your password" required />
             </div>
-            <div class="form-check">
-                <input type="hidden" name="isAdminLogin" value="false" /> <!-- ערך ברירת מחדל -->
-                <input type="checkbox" name="isAdminLogin" id="isAdminLogin" value="true" class="form-check-input" />
-                <label for="isAdminLogin" class="form-check-label">Login as Admin</label>
+            <div>
+                <label for="secretKey" class="form-label">Admin Secret Key:</label>
+                <input name="secretKey" id="secretKey" type="text" class="form-control" placeholder="Enter admin secret key (if applicable)" />
             </div>
-
-
             <button type="submit" class="btn btn-primary mt-3">Login</button>
         </form>
 
@@ -138,9 +131,7 @@
         {
             <div class="error-message">@TempData["Message"]</div>
         }
-
     </div>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

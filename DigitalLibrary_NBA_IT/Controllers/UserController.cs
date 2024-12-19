@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using DigitalLibrary_NBA_IT.Models;
+using DigitalLibrary_NBA_IT.Helpers; // ייבוא מחלקת PasswordHasher
 
 namespace DigitalLibrary_NBA_IT.Controllers
 {
@@ -32,7 +33,6 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(USERS user)
         {
-            // קבלת הערך של תיבת הסימון
             bool isAdmin = Request.Form["isAdmin"] == "true";
 
             if (!IsValidPassword(user.password))
@@ -44,7 +44,13 @@ namespace DigitalLibrary_NBA_IT.Controllers
             if (ModelState.IsValid)
             {
                 user.registration_date = DateTime.Now;
-                user.isAdmin = isAdmin; // הגדרת האם הוא מנהל או לא
+                user.isAdmin = isAdmin;
+
+                // יצירת Salt והצפנת הסיסמה
+                string salt = PasswordHasher.GenerateSalt();
+                user.password = PasswordHasher.HashPassword(user.password, salt);
+                user.Salt = salt; // שמירת ה-Salt בבסיס הנתונים
+
                 db.USERS.Add(user);
                 db.SaveChanges();
 
@@ -53,9 +59,6 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             return View(user);
         }
-
-
-
 
         // GET: Login - הצגת טופס התחברות
         public ActionResult Login()
@@ -66,33 +69,34 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // POST: Login - בדיקת פרטי התחברות
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string email, string password, bool isAdminLogin = false)
+        public ActionResult Login(string email, string password, string secretKey)
         {
-            // הדפסה לבדיקת הערכים שהתקבלו
-            Console.WriteLine($"isAdminLogin: {isAdminLogin}");
-            Console.WriteLine($"Email: {email}, Password: {password}");
-
-            // בדוק את המשתמש מהמסד
-            var user = db.USERS.FirstOrDefault(u => u.email == email && u.password == password);
+            string adminSecretKey = System.Configuration.ConfigurationManager.AppSettings["AdminSecretKey"];
+            var user = db.USERS.FirstOrDefault(u => u.email == email);
 
             if (user != null)
             {
-                Console.WriteLine($"User found: {user.name}, isAdmin: {user.isAdmin}");
+                // בדיקת סיסמה
+                string hashedPassword = PasswordHasher.HashPassword(password, user.Salt);
+                if (user.password != hashedPassword)
+                {
+                    TempData["Message"] = "Invalid email or password.";
+                    return RedirectToAction("Login");
+                }
 
-                if (isAdminLogin)
+                if (!string.IsNullOrEmpty(secretKey))
                 {
                     // התחברות כמנהל
-                    if (user.isAdmin)
+                    if (user.isAdmin && secretKey == adminSecretKey)
                     {
                         Session["UserID"] = user.user_id;
                         Session["UserName"] = user.name;
                         Session["IsAdmin"] = true;
-                        TempData["Message"] = "Welcome, Admin!";
                         return RedirectToAction("AdminDashboard");
                     }
                     else
                     {
-                        TempData["Message"] = "You do not have admin privileges.";
+                        TempData["Message"] = "Invalid admin credentials.";
                         return RedirectToAction("Login");
                     }
                 }
@@ -101,7 +105,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
                     // התחברות רגילה
                     if (user.isAdmin)
                     {
-                        TempData["Message"] = "Admins must log in using the 'Login as Admin' option.";
+                        TempData["Message"] = "Admins must use the Admin Secret Key to log in.";
                         return RedirectToAction("Login");
                     }
                     else
@@ -109,7 +113,6 @@ namespace DigitalLibrary_NBA_IT.Controllers
                         Session["UserID"] = user.user_id;
                         Session["UserName"] = user.name;
                         Session["IsAdmin"] = false;
-                        TempData["Message"] = "Welcome, User!";
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -118,11 +121,6 @@ namespace DigitalLibrary_NBA_IT.Controllers
             TempData["Message"] = "Invalid email or password.";
             return RedirectToAction("Login");
         }
-
-
-
-
-
 
         // GET: AdminDashboard - עמוד מנהל
         public ActionResult AdminDashboard()
@@ -135,7 +133,6 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             return View();
         }
-
 
         // Logout - יציאה מהמערכת
         public ActionResult Logout()
