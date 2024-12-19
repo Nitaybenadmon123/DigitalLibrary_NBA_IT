@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using DigitalLibrary_NBA_IT.Models;
+using BCrypt.Net;
 
 namespace DigitalLibrary_NBA_IT.Controllers
 {
@@ -63,7 +64,10 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             if (user != null && !string.IsNullOrEmpty(newPassword))
             {
-                user.password = newPassword;
+                // הצפנת הסיסמה החדשה
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                user.password = hashedPassword;
+
                 db.SaveChanges();
 
                 TempData["Message"] = "Password updated successfully.";
@@ -104,6 +108,5 @@ namespace DigitalLibrary_NBA_IT.Controllers
             TempData["MessageType"] = "error";
             return RedirectToAction("Profile");
         }
-
     }
 }
