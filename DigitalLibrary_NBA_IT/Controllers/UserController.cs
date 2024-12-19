@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using DigitalLibrary_NBA_IT.Models;
+using BCrypt.Net;
 
 namespace DigitalLibrary_NBA_IT.Controllers
 {
@@ -55,6 +56,8 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 user.registration_date = DateTime.Now;
                 user.isAdmin = false; // משתמש רגיל כברירת מחדל
                 db.USERS.Add(user);
+                user.password = BCrypt.Net.BCrypt.HashPassword(user.password);
+
                 db.SaveChanges();
                 TempData["Message"] = "Registration successful! Please log in.";
                 return RedirectToAction("Login");
@@ -74,29 +77,34 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(string email, string password)
         {
-            var user = db.USERS.FirstOrDefault(u => u.email == email && u.password == password);
+            var user = db.USERS.FirstOrDefault(u => u.email == email);
 
             if (user != null)
             {
-                if (user.isAdmin)
+                // בדיקת הסיסמה שהוזנה מול הסיסמה המוצפנת
+                if (BCrypt.Net.BCrypt.Verify(password, user.password))
                 {
-                    Session["UserID"] = user.user_id;
-                    Session["UserName"] = user.name;
-                    Session["IsAdmin"] = true;
-                    return RedirectToAction("AdminDashboard");
-                }
-                else
-                {
-                    Session["UserID"] = user.user_id;
-                    Session["UserName"] = user.name;
-                    Session["IsAdmin"] = false;
-                    return RedirectToAction("Index", "Home");
+                    if (user.isAdmin)
+                    {
+                        Session["UserID"] = user.user_id;
+                        Session["UserName"] = user.name;
+                        Session["IsAdmin"] = true;
+                        return RedirectToAction("AdminDashboard");
+                    }
+                    else
+                    {
+                        Session["UserID"] = user.user_id;
+                        Session["UserName"] = user.name;
+                        Session["IsAdmin"] = false;
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
             }
 
             TempData["Message"] = "Invalid email or password.";
             return RedirectToAction("Login");
         }
+
 
         // GET: AdminDashboard - עמוד מנהל
         public ActionResult AdminDashboard()
