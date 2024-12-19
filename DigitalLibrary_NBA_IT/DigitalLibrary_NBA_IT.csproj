@@ -138,6 +138,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AdminPasswordController.cs" />
     <Compile Include="Controllers\Book.cs" />
     <Compile Include="Controllers\BookController.cs" />
     <Compile Include="Controllers\LibraryDbContext.cs" />
@@ -257,6 +258,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\AdminPassword\" />
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Book\" />
   </ItemGroup>
