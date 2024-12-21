@@ -31,6 +31,41 @@
     .search-bar {
         margin-bottom: 20px;
     }
+
+    /* אפקט ריחוף על כרטיסיות */
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+    }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+    /* אפקט ריחוף על כפתורים */
+    .btn-primary, .btn-secondary {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: scale(1.1);
+            background-color: #0056b3; /* צבע כהה יותר לכפתור primary */
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268; /* צבע כהה יותר לכפתור secondary */
+        }
+
+    /* עיצוב אחיד לתמונות */
+    .img-fixed {
+        width: 100%; /* התאמה לרוחב הקלף */
+        height: 300px; /* גובה קבוע */
+        object-fit: contain; /* התאמה מלאה למסגרת */
+        border-top-left-radius: 5px; /* פינות מעוגלות */
+        border-top-right-radius: 5px; /* פינות מעוגלות */
+        background-color: #f8f9fa; /* רקע בהיר למקרה של טעינה איטית */
+    }
 </style>
 
 <div class="container mt-5">
@@ -90,16 +125,3 @@
         }
     </div>
 </div>
-
-<style>
-    /* עיצוב אחיד לתמונות */
-    .img-fixed {
-        width: 100%; /* התאמה לרוחב הקלף */
-        height: 300px; /* גובה קבוע */
-        object-fit: contain; /* התאמה מלאה למסגרת */
-        border-top-left-radius: 5px; /* פינות מעוגלות */
-        border-top-right-radius: 5px; /* פינות מעוגלות */
-        background-color: #f8f9fa; /* רקע בהיר למקרה של טעינה איטית */
-    }
-</style>
-
