@@ -18,7 +18,14 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Home")">Home</a>
+                        @if (Session["IsAdmin"] != null && (bool)Session["IsAdmin"])
+                        {
+                            <a class="nav-link" href="@Url.Action("AdminDashboard", "User")">Home</a>
+                        }
+                        else
+                        {
+                            <a class="nav-link" href="@Url.Action("Index", "Home")">Home</a>
+                        }
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="@Url.Action("About", "Home")">About</a>
