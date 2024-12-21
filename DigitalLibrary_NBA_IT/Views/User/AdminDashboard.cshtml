@@ -1,6 +1,111 @@
-﻿@{
-    ViewBag.Title = "Admin Dashboard";
-}
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding-top: 50px;
+        }
 
-<h2>Welcome, Admin!</h2>
-<p>This is your admin panel where you can manage users, books, and more.</p>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .dashboard-box {
+            background: #ffffff;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .dashboard-box:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            }
+
+            .dashboard-box h3 {
+                color: #d4af37;
+                font-size: 1.5em;
+                margin-bottom: 10px;
+            }
+
+            .dashboard-box p {
+                font-size: 1em;
+                color: #555;
+            }
+
+            .dashboard-box a {
+                display: inline-block;
+                margin-top: 10px;
+                padding: 10px 20px;
+                background: #d4af37;
+                color: #000;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+
+                .dashboard-box a:hover {
+                    background: #000;
+                    color: #fff;
+                }
+    </style>
+</head>
+<body>
+    <div class="container text-center my-5">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome to the Admin Panel. Choose an action below:</p>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- אפשרות 1 -->
+        <div class="dashboard-box">
+            <h3>ניהול קטלוג הספרים</h3>
+            <p>הוספה, עריכה והסרה של ספרים מקטלוג הספרים.</p>
+            <a href="#">Go</a>
+        </div>
+
+        <!-- אפשרות 2 -->
+        <div class="dashboard-box">
+            <h3>ניהול רשימות המתנה</h3>
+            <p>ניהול והצגת רשימות המתנה של משתמשים.</p>
+            <a href="#">Go</a>
+        </div>
+
+        <!-- אפשרות 3 -->
+        <div class="dashboard-box">
+            <h3>ניהול משתמשים</h3>
+            <p>עדכון, מחיקה והוספה של משתמשים למערכת.</p>
+            <a href="#">Go</a>
+        </div>
+
+        <!-- אפשרות 4 -->
+        <div class="dashboard-box">
+            <h3>ניהול מחירים</h3>
+            <p>עדכון מחירי השכרה ומכירה של ספרים.</p>
+            <a href="#">Go</a>
+        </div>
+
+        <!-- אפשרות 5 -->
+        <div class="dashboard-box">
+            <h3>דיווחי מערכת</h3>
+            <p>סקירה וניתוח של פעילות המשתמשים במערכת.</p>
+            <a href="#">Go</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
