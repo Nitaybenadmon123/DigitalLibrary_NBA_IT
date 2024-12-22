@@ -76,6 +76,20 @@
                 border: 1px solid #000;
             }
 
+        .forgot-password {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+            .forgot-password a {
+                color: #d4af37;
+                text-decoration: underline;
+            }
+
+                .forgot-password a:hover {
+                    color: #fff;
+                }
+
         .error-message {
             text-align: center;
             color: red;
@@ -122,8 +136,12 @@
                 <label for="password" class="form-label">Password:</label>
                 <input name="password" id="password" type="password" class="form-control" placeholder="Enter your password" required />
             </div>
-            <button type="submit" class="btn btn-primary mt-3">Login</button>
+            <button type="submit" class="btn btn-primary mt-3 w-100">Login</button>
         </form>
+
+        <div class="forgot-password">
+            <a href="@Url.Action("ForgotPassword", "User")">Forgot your password?</a>
+        </div>
 
         @if (TempData["Message"] != null)
         {

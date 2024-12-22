@@ -124,5 +124,104 @@ namespace DigitalLibrary_NBA_IT.Controllers
             Session.Clear();
             return RedirectToAction("Login");
         }
+
+
+        [HttpGet]
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ForgotPassword(string email)
+        {
+            var user = db.USERS.FirstOrDefault(u => u.email == email);
+            if (user != null)
+            {
+                // צור קוד אקראי
+                string resetCode = new Random().Next(100000, 999999).ToString();
+
+                // שמירת הקוד ב-Session או TempData
+                TempData["ResetCode"] = resetCode;
+                TempData["Email"] = email;
+
+                // שליחת המייל עם הקוד
+                var emailService = new EmailService();
+                emailService.SendEmail(email, "Password Reset Code", $"Your reset code is: {resetCode}");
+
+                TempData["Message"] = "A password reset code has been sent to your email.";
+                return RedirectToAction("VerifyCode");
+            }
+
+            TempData["Error"] = "Email not found.";
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult VerifyCode()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult VerifyCode(string code)
+        {
+            string storedCode = TempData["ResetCode"] as string;
+            string email = TempData["Email"] as string;
+
+            if (storedCode == code)
+            {
+                TempData["Email"] = email; // שמירה לשלב הבא
+                return RedirectToAction("ResetPassword");
+            }
+
+            TempData["Error"] = "Invalid reset code. Please try again.";
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult ResetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        public ActionResult ResetPassword(string newPassword)
+        {
+            string email = TempData["Email"] as string;
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                var user = db.USERS.FirstOrDefault(u => u.email == email);
+                if (user != null)
+                {
+                    // בדיקה אם הסיסמה עומדת בקריטריונים
+                    if (!IsValidPassword(newPassword))
+                    {
+                        TempData["Error"] = "Password must be at least 6 characters, include one number, and one special character.";
+                        return RedirectToAction("ResetPassword");
+                    }
+
+                    // הצפנת הסיסמה ושמירה
+                    user.password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                    db.SaveChanges();
+
+                    TempData["Message"] = "Your password has been reset successfully.";
+                    return RedirectToAction("Login");
+                }
+            }
+
+            TempData["Error"] = "Failed to reset password.";
+            return View();
+        }
+
+
+
+
+
     }
 }

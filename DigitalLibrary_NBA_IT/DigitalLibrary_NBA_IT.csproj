@@ -145,6 +145,7 @@
     <Compile Include="Controllers\LibraryDbContext.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\UserProfileController.cs" />
+    <Compile Include="EmailService.cs" />
     <Compile Include="Models\Books.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>
@@ -260,6 +261,9 @@
     <Content Include="Views\Admin\Details.cshtml" />
     <Content Include="Views\Admin\ManagePrices.cshtml" />
     <Content Include="Views\Admin\SystemReports.cshtml" />
+    <Content Include="Views\User\ResetPassword.cshtml" />
+    <Content Include="Views\User\VerifyCode.cshtml" />
+    <Content Include="Views\User\ForgotPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

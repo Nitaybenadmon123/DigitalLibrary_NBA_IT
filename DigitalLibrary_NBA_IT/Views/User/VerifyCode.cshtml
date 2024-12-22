@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Verify Code";
+}
+
+<div class="container mt-5">
+    <h2>Verify Reset Code</h2>
+    <p>Please enter the code sent to your email address.</p>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <form method="post" action="@Url.Action("VerifyCode", "User")">
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <label for="code">Reset Code:</label>
+            <input type="text" name="code" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Verify</button>
+    </form>
+</div>
