@@ -95,6 +95,18 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             return RedirectToAction("ManagePrices");
         }
+
+        // פעולה לעמוד דוחות מערכת
+        public ActionResult SystemReports()
+        {
+            if (Session["IsAdmin"] == null || !(bool)Session["IsAdmin"])
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            // לוגיקה להפקת דוחות - בהמשך נוסיף את הלוגיקה
+            return View();
+        }
     }
 
 }
