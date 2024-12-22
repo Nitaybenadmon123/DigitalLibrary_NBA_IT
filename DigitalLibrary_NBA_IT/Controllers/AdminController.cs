@@ -63,6 +63,39 @@ namespace DigitalLibrary_NBA_IT.Controllers
             }
             return View(user);
         }
+        public ActionResult ManagePrices(string query)
+        {
+            var books = db.Books.AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                books = books.Where(b => b.Title.Contains(query) || b.Publish.Contains(query));
+                ViewBag.Query = query; // שימור החיפוש בשדה
+            }
+
+            return View(books.ToList());
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdatePrice(int bookId, string newPrice)
+        {
+            var book = db.Books.FirstOrDefault(b => b.Book_ID == bookId.ToString());
+            if (book != null && decimal.TryParse(newPrice, out decimal parsedPrice))
+            {
+                book.Price = parsedPrice.ToString("0.00");
+                db.SaveChanges();
+                TempData["Message"] = $"The price for {book.Title} was updated successfully.";
+            }
+            else
+            {
+                TempData["Message"] = "Failed to update the price. Please try again.";
+            }
+
+            return RedirectToAction("ManagePrices");
+        }
     }
+
 }
+
