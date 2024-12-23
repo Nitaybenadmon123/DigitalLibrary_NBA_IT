@@ -63,20 +63,22 @@ namespace DigitalLibrary_NBA_IT.Controllers
             }
             return View(user);
         }
-        public ActionResult ManagePrices(string query)
+        [HttpGet]
+        public ActionResult ManageBooks(string query)
         {
             var books = db.Books.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(query))
+            // בדיקה אם השאילתה מכילה ערך והוספת תנאי חיפוש
+            if (!string.IsNullOrEmpty(query))
             {
                 books = books.Where(b => b.Title.Contains(query) || b.Publish.Contains(query));
-                ViewBag.Query = query; // שימור החיפוש בשדה
+                ViewBag.Query = query; // שמירת השאילתה עבור הצגת הערך בתיבת החיפוש
             }
 
             return View(books.ToList());
         }
 
-
+        // פעולה לעדכון מחיר הספר
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UpdatePrice(int bookId, string newPrice)
@@ -93,8 +95,78 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 TempData["Message"] = "Failed to update the price. Please try again.";
             }
 
-            return RedirectToAction("ManagePrices");
+            return RedirectToAction("ManageBooks");
         }
+
+        // פעולה למחיקת ספר
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteBook(string bookId)
+        {
+            if (string.IsNullOrEmpty(bookId))
+            {
+                TempData["Error"] = "Invalid book ID.";
+                return RedirectToAction("ManageBooks");
+            }
+
+            var book = db.Books.FirstOrDefault(b => b.Book_ID.Trim() == bookId.Trim());
+
+            if (book != null)
+            {
+                db.Books.Remove(book);
+                db.SaveChanges();
+                TempData["Message"] = "Book deleted successfully.";
+            }
+            else
+            {
+                TempData["Error"] = "Book not found.";
+            }
+
+            return RedirectToAction("ManageBooks");
+        }
+
+
+        // פעולה להצגת עמוד הוספת ספר
+        [HttpGet]
+        public ActionResult AddBookView()
+        {
+            return View();
+        }
+
+        // פעולה להוספת ספר חדש
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddBook(string Title, string Publish, decimal Price, int CopiesAvailable, string ImageUrl)
+        {
+            // מציאת Book_ID הגבוה ביותר בטבלה
+            int maxBookId = db.Books.ToList().Select(b => int.TryParse(b.Book_ID.Trim(), out int id) ? id : 0).Max();
+            int newBookId = maxBookId + 1;
+
+            var book = new Books
+            {
+                Book_ID = newBookId.ToString().PadLeft(10), // יישור מספר הספר לעד 10 תווים
+                Title = Title,
+                Publish = Publish,
+                Price = Price.ToString("0.00"),
+                CopiesAvailable = CopiesAvailable.ToString(),
+                ImageUrl = ImageUrl
+            };
+
+            try
+            {
+                db.Books.Add(book);
+                db.SaveChanges();
+
+                TempData["Message"] = "Book added successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message; // שמירת הודעת שגיאה אם ישנה בעיה
+            }
+
+            return RedirectToAction("ManageBooks");
+        }
+
 
         // פעולה לעמוד דוחות מערכת
         public ActionResult SystemReports()
