@@ -1,17 +1,130 @@
 ﻿@{
-    ViewBag.Title = "Contact";
+    ViewBag.Title = "Contact Us";
 }
-<h2>@ViewBag.Title.</h2>
-<h3>@ViewBag.Message</h3>
 
-<address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
-    <abbr title="Phone">P:</abbr>
-    425.555.0100
-</address>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1517433456452-f9633a875f6f?w=1920&h=1080&fit=crop');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+        }
 
-<address>
-    <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>
+        .contact-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 50px;
+        }
+
+        .contact-header {
+            font-family: 'Arial', sans-serif;
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .contact-details {
+            font-size: 18px;
+            color: #34495e;
+            line-height: 1.8;
+        }
+
+        .icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #2980b9;
+        }
+
+        .email-link {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+            .email-link:hover {
+                text-decoration: underline;
+            }
+
+        .btn-back {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-transform: uppercase;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .btn-back:hover {
+                background-color: #2980b9;
+                transform: scale(1.05);
+            }
+
+        .icon-phone {
+            color: #27ae60;
+        }
+
+        .contact-icons {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="contact-container">
+            <h1 class="contact-header">Get in Touch</h1>
+            <div class="contact-icons">
+                <i class="bi bi-envelope-fill"></i>
+            </div>
+            <p class="contact-details">
+                We’d love to hear from you! If you have any questions, suggestions, or issues, feel free to contact us.
+            </p>
+            <div class="contact-details">
+                <p>
+                    <span class="icon"><i class="bi bi-person-fill"></i></span>
+                    <strong>Idan Tegave</strong><br />
+                    <span class="icon"><i class="bi bi-envelope-fill"></i></span>
+                    <a href="mailto:Idante@ac.sce.ac.il" class="email-link">Idante@ac.sce.ac.il</a>
+                </p>
+                <p>
+                    <span class="icon"><i class="bi bi-person-fill"></i></span>
+                    <strong>Nitay Ben Admon</strong><br />
+                    <span class="icon"><i class="bi bi-envelope-fill"></i></span>
+                    <a href="mailto:nitaybe@ac.sce.ac.il" class="email-link">nitaybe@ac.sce.ac.il</a>
+                </p>
+                <p>
+                    <span class="icon icon-phone"><i class="bi bi-telephone-fill"></i></span>
+                    <strong>Phone:</strong> +972-54-123-4567
+                </p>
+            </div>
+            <p class="contact-details text-center">
+                <button class="btn-back" onclick="window.location.href='/Home/Index'">Back to Home</button>
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+</body>
+</html>
