@@ -7,7 +7,7 @@
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Your Cart</h1>
-
+     
     <div class="row">
         @if (Model.Any())
         {
@@ -15,12 +15,17 @@
             {
                 // המרה בטוחה של Price מ-nchar ל-decimal
                 var isBorrow = TempData["type"] != null && TempData["type"].ToString() == "borrow";
-                decimal price = 0;
-                //if (decimal.TryParse(book.Price?.Trim(), out var parsedPrice))
-                //{
-                //    price = isBorrow ? parsedPrice / 4 : parsedPrice;
-                //}
-                //totalAmount += price; // עדכון המחיר הסופי
+                var priceString = book.Price.Trim(); // חילוץ המחיר בתור מחרוזת
+                decimal price = 0; // אתחול למחיר
+                decimal parsedPrice; // משתנה להמרת המחיר
+
+                // המרה ובדיקה ישירה
+                if (!string.IsNullOrEmpty(priceString) && decimal.TryParse(priceString, out parsedPrice))
+                {
+                    price = isBorrow ? parsedPrice / 4 : parsedPrice; // חישוב מחיר מושאל או קנייה
+                }
+
+                totalAmount += price; // עדכון המחיר הסופי
 
                 <div class="col-md-3 mb-3">
                     <div class="card shadow-sm" style="max-height: 400px; font-size: 0.9rem;">
@@ -32,7 +37,7 @@
                         <div class="card-body">
                             <h5 class="card-title">@book.Title</h5>
                             <p class="card-text">Publisher: @book.Publish</p>
-                            <p class="card-text">Type: <strong>@(isBorrow ? "Borrowed" : "Purchased")</strong></p>
+                            <p class="card-text">Type: <strong>@(isBorrow ? "Borrowed" : "Borrowed")</strong></p>
                             <p class="card-text">Price: $@(price.ToString("F2"))</p>
                         </div>
                     </div>
