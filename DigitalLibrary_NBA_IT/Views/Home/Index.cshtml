@@ -41,7 +41,6 @@
         margin-bottom: 20px;
     }
 
-    /* אפקט ריחוף על כרטיסיות */
     .card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         border-radius: 10px;
@@ -52,28 +51,60 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
-    /* אפקט ריחוף על כפתורים */
-    .btn-primary, .btn-secondary {
-        transition: background-color 0.3s ease, transform 0.2s ease;
+    .popular-badge {
+        background-color: gold;
+        color: black;
+        font-weight: bold;
+        font-size: 0.9rem;
+        border-radius: 5px;
+        padding: 5px 10px;
+        display: inline-block;
+        margin-top: 5px;
     }
 
-        .btn-primary:hover, .btn-secondary:hover {
+    .img-fixed {
+        width: 100%;
+        height: 300px;
+        object-fit: contain;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        background-color: #f8f9fa;
+    }
+
+    .btn-primary, .btn-secondary {
+        font-size: 0.9rem;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+        .btn-primary:hover {
             transform: scale(1.1);
-            background-color: #0056b3; /* צבע כהה יותר לכפתור primary */
+            background-color: #0056b3;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+    }
 
         .btn-secondary:hover {
-            background-color: #5a6268; /* צבע כהה יותר לכפתור secondary */
+            transform: scale(1.1);
+            background-color: #5a6268;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
-    /* עיצוב אחיד לתמונות */
-    .img-fixed {
-        width: 100%; /* התאמה לרוחב הקלף */
-        height: 300px; /* גובה קבוע */
-        object-fit: contain; /* התאמה מלאה למסגרת */
-        border-top-left-radius: 5px; /* פינות מעוגלות */
-        border-top-right-radius: 5px; /* פינות מעוגלות */
-        background-color: #f8f9fa; /* רקע בהיר למקרה של טעינה איטית */
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 15px;
     }
 </style>
 
@@ -98,12 +129,23 @@
         {
             foreach (var book in Model)
             {
+                decimal price = 0; // משתנה לאחסון המחיר
+                decimal parsedPrice; // משתנה להמרת המחיר
+
+                // המרה ובדיקה ישירה
+                if (!string.IsNullOrEmpty(book.Price.Trim()) && decimal.TryParse(book.Price.Trim(), out parsedPrice))
+                {
+                    price = parsedPrice; // עדכון המחיר למספר
+                }
+
+                // בדיקה אם הספר פופולרי
+                bool isPopular = price > 20;
+
                 <div class="col-md-3 mb-4">
                     <div class="card">
-                        <!-- טעינת התמונה עם טיפול בטעויות והגדרת ברירת מחדל -->
                         <img src="@(!string.IsNullOrEmpty(book.ImageUrl)
-                                        ? book.ImageUrl.Replace("/upload/", "/upload/w_300,h_200,c_fill,dpr_2.0/")
-                                        : "https://via.placeholder.com/300x200?text=No+Image")"
+                                    ? book.ImageUrl.Replace("/upload/", "/upload/w_300,h_200,c_fill,dpr_2.0/")
+                                    : "https://via.placeholder.com/300x200?text=No+Image")"
                              class="card-img-top img-fixed"
                              alt="@book.Title"
                              onerror="this.onerror=null; this.style.display='none';">
@@ -111,17 +153,27 @@
                             <h5 class="card-title">@book.Title</h5>
                             <p class="card-text">Publisher: @book.Publish</p>
                             <p class="card-text">Age: @book.age+</p>
-                            <p class="card-text">Price: $@book.Price</p>
-                            <p class="card-text">Copies Available: @book.CopiesAvailable</p>
-                            <a href="@Url.Action("AddToCart", "Home", new { id = book.Book_ID.ToString().Trim(), type = "buy" })" class="btn btn-primary">Buy</a>
-                            @if (int.Parse(book.CopiesAvailable) > 0)
+                            <p class="card-text">Price (Buy): $@(price.ToString("F2"))</p>
+
+
+                            @if (!isPopular)
                             {
-                                <a href="@Url.Action("AddToCart", "Home", new { id = book.Book_ID.ToString().Trim(), type = "borrow" })" class="btn btn-secondary">Borrow</a>
+                                <p class="card-text">Price (Borrow): $@(Math.Round(price / 4, 2))</p>
                             }
                             else
                             {
-                                <span class="text-danger">Not Available</span>
+                                <span class="popular-badge">Popular Book</span>
                             }
+                            <p class="card-text">Copies Available: @book.CopiesAvailable</p>
+
+                            <!-- כפתורים מסודרים בשורה -->
+                            <div class="button-container">
+                                <a href="@Url.Action("AddToCart", "Home", new { id = book.Book_ID.ToString().Trim(), type = "buy" })" class="btn btn-primary">Buy</a>
+                                @if (!isPopular)
+                                {
+                                    <a href="@Url.Action("AddToCart", "Home", new { id = book.Book_ID.ToString().Trim(), type = "borrow" })" class="btn btn-secondary">Borrow</a>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
