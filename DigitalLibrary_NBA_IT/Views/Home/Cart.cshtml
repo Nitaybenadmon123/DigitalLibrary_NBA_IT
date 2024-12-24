@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DigitalLibrary_NBA_IT.Models.Books>
+﻿@model IEnumerable<DigitalLibrary_NBA_IT.Models.CartItem>
 
 @{
     ViewBag.Title = "Your Cart";
@@ -7,14 +7,14 @@
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Your Cart</h1>
-     
+
     <div class="row">
         @if (Model.Any())
         {
-            foreach (var book in Model)
+            foreach (var item in Model)
             {
-                // המרה בטוחה של Price מ-nchar ל-decimal
-                var isBorrow = TempData["type"] != null && TempData["type"].ToString() == "borrow";
+                var book = item.Book;
+                var isBorrow = item.Type == "borrow";
                 var priceString = book.Price.Trim(); // חילוץ המחיר בתור מחרוזת
                 decimal price = 0; // אתחול למחיר
                 decimal parsedPrice; // משתנה להמרת המחיר
@@ -27,6 +27,7 @@
 
                 totalAmount += price; // עדכון המחיר הסופי
 
+
                 <div class="col-md-3 mb-3">
                     <div class="card shadow-sm" style="max-height: 400px; font-size: 0.9rem;">
                         <img src="@(!string.IsNullOrEmpty(book.ImageUrl)
@@ -37,7 +38,7 @@
                         <div class="card-body">
                             <h5 class="card-title">@book.Title</h5>
                             <p class="card-text">Publisher: @book.Publish</p>
-                            <p class="card-text">Type: <strong>@(isBorrow ? "Borrowed" : "Borrowed")</strong></p>
+                            <p class="card-text">Type: <strong>@(isBorrow ? "Borrowed" : "Buying")</strong></p>
                             <p class="card-text">Price: $@(price.ToString("F2"))</p>
                         </div>
                     </div>

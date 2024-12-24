@@ -47,10 +47,14 @@ namespace DigitalLibrary_NBA_IT.Controllers
             }
 
             // קבלת רשימת העגלה מה-Session
-            var cart = Session["Cart"] as List<Books> ?? new List<Books>();
+            var cart = Session["Cart"] as List<CartItem> ?? new List<CartItem>();
 
-            // הוספת הספר לעגלה
-            cart.Add(book);
+            // הוספת הספר לעגלה עם סוג הפעולה (קנייה או השאלה)
+            cart.Add(new CartItem
+            {
+                Book = book,
+                Type = type
+            });
 
             // שמירה חזרה ל-Session
             Session["Cart"] = cart;
@@ -59,16 +63,22 @@ namespace DigitalLibrary_NBA_IT.Controllers
             Session["CartCount"] = cart.Count;
 
             // הודעת הצלחה
-            TempData["Message"] = $"{book.Title} has been added to your cart.";
+            TempData["Message"] = $"{book.Title} has been added to your cart as a {(type == "borrow" ? "Borrowed" : "Purchased")} item.";
 
             return RedirectToAction("Index");
         }
         public ActionResult Cart()
         {
-            // בדיקה אם Session["Cart"] קיים, ואם לא, מחזיר רשימה ריקה
-            var cart = Session["Cart"] as List<DigitalLibrary_NBA_IT.Models.Books> ?? new List<DigitalLibrary_NBA_IT.Models.Books>();
+            var cart = Session["Cart"] as List<CartItem> ?? new List<CartItem>();
             return View(cart);
         }
+
+        //public ActionResult Cart()
+        //{
+        //    // בדיקה אם Session["Cart"] קיים, ואם לא, מחזיר רשימה ריקה
+        //    var cart = Session["Cart"] as List<DigitalLibrary_NBA_IT.Models.Books> ?? new List<DigitalLibrary_NBA_IT.Models.Books>();
+        //    return View(cart);
+        //}
 
         // פעולה להשאלת ספר (כבר קיימת אך לא נדרשת כעת לשימוש)
         public ActionResult Borrow(string id)
