@@ -136,7 +136,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // פעולה להוספת ספר חדש
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddBook(string Title, string Publish, decimal Price, int CopiesAvailable, string ImageUrl)
+        public ActionResult AddBook(string Title, string Publish, decimal Price, int CopiesAvailable, string ImageUrl, int age)
         {
             // מציאת Book_ID הגבוה ביותר בטבלה
             int maxBookId = db.Books.ToList().Select(b => int.TryParse(b.Book_ID.Trim(), out int id) ? id : 0).Max();
@@ -149,7 +149,9 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 Publish = Publish,
                 Price = Price.ToString("0.00"),
                 CopiesAvailable = CopiesAvailable.ToString(),
-                ImageUrl = ImageUrl
+                ImageUrl = ImageUrl,
+                age = age // הוספת מגבלת גיל
+
             };
 
             try

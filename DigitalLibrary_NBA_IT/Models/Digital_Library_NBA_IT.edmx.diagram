@@ -8,7 +8,7 @@
         <EntityTypeShape EntityType="Digital_library_DBModel.Books" Width="1.5" PointX="1.875" PointY="3.375" />
         <EntityTypeShape EntityType="Digital_library_DBModel.CART" Width="1.5" PointX="4.125" PointY="4.75" />
         <EntityTypeShape EntityType="Digital_library_DBModel.Reviews" Width="1.5" PointX="7.125" PointY="7.625" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.UserLibrary" Width="1.5" PointX="4.125" PointY="17" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.UserLibrary" Width="1.5" PointX="5.125" PointY="10.5" />
         <EntityTypeShape EntityType="Digital_library_DBModel.USERS" Width="1.5" PointX="1.875" PointY="7.375" />
         <EntityTypeShape EntityType="Digital_library_DBModel.WAITLIST" Width="1.5" PointX="4.125" PointY="7.75" />
         <AssociationConnector Association="Digital_library_DBModel.FK__CART__book_id__787EE5A0" />
