@@ -19,6 +19,14 @@
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
         }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1030;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
 
         .dashboard-box {
             background: #ffffff;
@@ -70,12 +78,6 @@
     </div>
 
     <div class="dashboard-container">
-        <!-- אפשרות 1 -->
-        <div class="dashboard-box">
-            <h3>ניהול קטלוג הספרים</h3>
-            <p>הוספה, עריכה והסרה של ספרים מקטלוג הספרים.</p>
-            <a href="#">Go</a>
-        </div>
 
         <!-- אפשרות 2 -->
         <div class="dashboard-box">
@@ -93,7 +95,7 @@
 
         <!-- אפשרות 4 -->
         <div class="dashboard-box">
-            <h3>ניהול מחירים</h3>
+            <h3>ניהול קטלוג הספרים</h3>
             <p>עדכון מחירי השכרה ומכירה של ספרים.</p>
             <a href="/Admin/ManageBooks">Go</a>
         </div>

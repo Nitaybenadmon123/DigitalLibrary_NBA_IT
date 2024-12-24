@@ -136,7 +136,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // פעולה להוספת ספר חדש
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddBook(string Title, string Publish, decimal Price, int CopiesAvailable, string ImageUrl)
+        public ActionResult AddBook(string Title, string Publish, decimal Price, int CopiesAvailable, string ImageUrl, int age)
         {
             // מציאת Book_ID הגבוה ביותר בטבלה
             int maxBookId = db.Books.ToList().Select(b => int.TryParse(b.Book_ID.Trim(), out int id) ? id : 0).Max();
@@ -149,7 +149,9 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 Publish = Publish,
                 Price = Price.ToString("0.00"),
                 CopiesAvailable = CopiesAvailable.ToString(),
-                ImageUrl = ImageUrl
+                ImageUrl = ImageUrl,
+                age = age // הוספת מגבלת גיל
+
             };
 
             try
@@ -179,6 +181,33 @@ namespace DigitalLibrary_NBA_IT.Controllers
             // לוגיקה להפקת דוחות - בהמשך נוסיף את הלוגיקה
             return View();
         }
+
+        // פעולה לעדכון מספר עותקים זמינים
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateCopies(string bookId, string newCopies)
+        {
+            if (string.IsNullOrEmpty(bookId) || string.IsNullOrEmpty(newCopies))
+            {
+                TempData["Error"] = "Invalid book ID or number of copies.";
+                return RedirectToAction("ManageBooks");
+            }
+
+            var book = db.Books.FirstOrDefault(b => b.Book_ID.Trim() == bookId.Trim());
+            if (book != null && int.TryParse(newCopies, out int parsedCopies))
+            {
+                book.CopiesAvailable = parsedCopies.ToString();
+                db.SaveChanges();
+                TempData["Message"] = $"The number of copies for {book.Title} was updated successfully.";
+            }
+            else
+            {
+                TempData["Error"] = "Failed to update the number of copies. Please try again.";
+            }
+
+            return RedirectToAction("ManageBooks");
+        }
+
     }
 
 }
