@@ -24,7 +24,6 @@
             <div class="alert alert-danger">@Html.Raw(TempData["Error"])</div>
         }
 
-
         <!-- סרגל חיפוש -->
         <div class="container mb-4">
             <form method="get" action="@Url.Action("ManageBooks", "Admin")">
@@ -51,6 +50,8 @@
                     <th>Publisher</th>
                     <th>Current Price</th>
                     <th>Update Price</th>
+                    <th>Copies Available</th>
+                    <th>Update Copies</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -67,7 +68,18 @@
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="bookId" value="@book.Book_ID" />
                                 <div class="input-group">
-                                    <input type="text" name="newPrice" class="form-control" placeholder="Enter new price" />
+                                    <input type="text" name="newPrice" class="form-control" placeholder="Enter new price" style="width: 100px;" />
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
+                        </td>
+                        <td>@book.CopiesAvailable</td>
+                        <td>
+                            <form method="post" action="@Url.Action("UpdateCopies", "Admin")" class="form-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="bookId" value="@book.Book_ID" />
+                                <div class="input-group">
+                                    <input type="text" name="newCopies" class="form-control" placeholder="Enter new copies" style="width: 100px;" />
                                     <button type="submit" class="btn btn-primary">Update</button>
                                 </div>
                             </form>
