@@ -4,6 +4,15 @@
     ViewBag.Title = "Home Page";
 }
 
+<!-- הודעת הצלחה -->
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <!-- תמונת רקע לכל העמוד -->
 <style>
     body {
@@ -101,12 +110,13 @@
                         <div class="card-body">
                             <h5 class="card-title">@book.Title</h5>
                             <p class="card-text">Publisher: @book.Publish</p>
+                            <p class="card-text">Age: @book.age+</p>
                             <p class="card-text">Price: $@book.Price</p>
                             <p class="card-text">Copies Available: @book.CopiesAvailable</p>
-                            <a href="@Url.Action("Buy", "Home", new { id = book.Book_ID })" class="btn btn-primary">Buy</a>
+                            <a href="@Url.Action("AddToCart", "Home", new { id = book.Book_ID.ToString().Trim(), type = "buy" })" class="btn btn-primary">Buy</a>
                             @if (int.Parse(book.CopiesAvailable) > 0)
                             {
-                                <a href="@Url.Action("Borrow", "Home", new { id = book.Book_ID })" class="btn btn-secondary">Borrow</a>
+                                <a href="@Url.Action("AddToCart", "Home", new { id = book.Book_ID.ToString().Trim(), type = "borrow" })" class="btn btn-secondary">Borrow</a>
                             }
                             else
                             {

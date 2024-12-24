@@ -1,0 +1,77 @@
+﻿@model IEnumerable<DigitalLibrary_NBA_IT.Models.Books>
+
+@{
+    ViewBag.Title = "Your Cart";
+    var totalAmount = 0.0m; // משתנה לחישוב המחיר הסופי
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Your Cart</h1>
+
+    <div class="row">
+        @if (Model.Any())
+        {
+            foreach (var book in Model)
+            {
+                // המרה בטוחה של Price מ-nchar ל-decimal
+                var isBorrow = TempData["type"] != null && TempData["type"].ToString() == "borrow";
+                decimal price = 0;
+                //if (decimal.TryParse(book.Price?.Trim(), out var parsedPrice))
+                //{
+                //    price = isBorrow ? parsedPrice / 4 : parsedPrice;
+                //}
+                //totalAmount += price; // עדכון המחיר הסופי
+
+                <div class="col-md-3 mb-3">
+                    <div class="card shadow-sm" style="max-height: 400px; font-size: 0.9rem;">
+                        <img src="@(!string.IsNullOrEmpty(book.ImageUrl)
+                                        ? book.ImageUrl.Replace("/upload/", "/upload/w_300,h_200,c_fill,dpr_2.0/")
+                                        : "https://via.placeholder.com/300x200?text=No+Image")"
+                             class="card-img-top img-fixed"
+                             alt="@book.Title">
+                        <div class="card-body">
+                            <h5 class="card-title">@book.Title</h5>
+                            <p class="card-text">Publisher: @book.Publish</p>
+                            <p class="card-text">Type: <strong>@(isBorrow ? "Borrowed" : "Purchased")</strong></p>
+                            <p class="card-text">Price: $@(price.ToString("F2"))</p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="col-12 mt-4">
+                <h4 class="text-end">Total Amount: $@totalAmount.ToString("F2")</h4>
+                <div class="text-end">
+                    <a href="@Url.Action("Payment", "Payment")" class="btn btn-success btn-lg mt-3">Proceed to Payment</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-12">
+                <p class="text-center text-danger">Your cart is empty.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .card-body {
+        padding: 10px;
+    }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .btn-success {
+        font-size: 1.2rem;
+        padding: 10px 20px;
+    }
+</style>

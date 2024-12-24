@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using DigitalLibrary_NBA_IT.Models;
@@ -16,27 +17,60 @@ namespace DigitalLibrary_NBA_IT.Controllers
             var books = string.IsNullOrEmpty(query)
                         ? db.Books.ToList()
                         : db.Books.Where(b => b.Title.Contains(query)
-                                           || b.Publish.Contains(query)
-                                           ) // ודא ששדה Author קיים
+                                           || b.Publish.Contains(query))
                                   .ToList();
 
             ViewBag.Query = query; // שמירה על השאילתה בתיבת החיפוש
             return View(books);
         }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
-
             return View();
         }
-        // פעולה להשאלת ספר
+
+        // פעולה להוספת ספר לעגלה
+        public ActionResult AddToCart(string id, string type)
+        {
+            var book = db.Books.Find(id);
+            if (book == null)
+            {
+                TempData["Message"] = "Book not found.";
+                return RedirectToAction("Index");
+            }
+
+            // קבלת רשימת העגלה מה-Session
+            var cart = Session["Cart"] as List<Books> ?? new List<Books>();
+
+            // הוספת הספר לעגלה
+            cart.Add(book);
+
+            // שמירה חזרה ל-Session
+            Session["Cart"] = cart;
+
+            // עדכון ספירת הפריטים בעגלה
+            Session["CartCount"] = cart.Count;
+
+            // הודעת הצלחה
+            TempData["Message"] = $"{book.Title} has been added to your cart.";
+
+            return RedirectToAction("Index");
+        }
+        public ActionResult Cart()
+        {
+            // בדיקה אם Session["Cart"] קיים, ואם לא, מחזיר רשימה ריקה
+            var cart = Session["Cart"] as List<DigitalLibrary_NBA_IT.Models.Books> ?? new List<DigitalLibrary_NBA_IT.Models.Books>();
+            return View(cart);
+        }
+
+        // פעולה להשאלת ספר (כבר קיימת אך לא נדרשת כעת לשימוש)
         public ActionResult Borrow(string id)
         {
             var book = db.Books.Find(id);
@@ -73,7 +107,6 @@ namespace DigitalLibrary_NBA_IT.Controllers
             var waitlist = new WAITLIST
             {
                 Book_ID = bookId,
-                //User_ID = GetCurrentUserId(), // פונקציה לזיהוי המשתמש
                 DateAdded = DateTime.Now
             };
 

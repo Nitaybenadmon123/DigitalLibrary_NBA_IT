@@ -15,6 +15,7 @@
           <Property Name="Price" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="CopiesAvailable" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="ImageUrl" Type="varchar" MaxLength="500" />
+          <Property Name="age" Type="int" />
         </EntityType>
         <EntityType Name="CART">
           <Key>
@@ -203,12 +204,17 @@
         <EntityContainer Name="Digital_library_DBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Books" EntityType="Digital_library_DBModel.Books" />
           <EntitySet Name="CART" EntityType="Digital_library_DBModel.CART" />
+          <EntitySet Name="Reviews" EntityType="Digital_library_DBModel.Reviews" />
           <EntitySet Name="UserLibrary" EntityType="Digital_library_DBModel.UserLibrary" />
           <EntitySet Name="USERS" EntityType="Digital_library_DBModel.USERS" />
           <EntitySet Name="WAITLIST" EntityType="Digital_library_DBModel.WAITLIST" />
           <AssociationSet Name="FK__CART__book_id__787EE5A0" Association="Digital_library_DBModel.FK__CART__book_id__787EE5A0">
             <End Role="Books" EntitySet="Books" />
             <End Role="CART" EntitySet="CART" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Reviews_Books" Association="Digital_library_DBModel.FK_Reviews_Books">
+            <End Role="Books" EntitySet="Books" />
+            <End Role="Reviews" EntitySet="Reviews" />
           </AssociationSet>
           <AssociationSet Name="FK_Waitlist_Books" Association="Digital_library_DBModel.FK_Waitlist_Books">
             <End Role="Books" EntitySet="Books" />
@@ -218,6 +224,10 @@
             <End Role="USERS" EntitySet="USERS" />
             <End Role="CART" EntitySet="CART" />
           </AssociationSet>
+          <AssociationSet Name="FK_Reviews_Users" Association="Digital_library_DBModel.FK_Reviews_Users">
+            <End Role="USERS" EntitySet="USERS" />
+            <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
           <AssociationSet Name="FK_UserLibrary_Users" Association="Digital_library_DBModel.FK_UserLibrary_Users">
             <End Role="USERS" EntitySet="USERS" />
             <End Role="UserLibrary" EntitySet="UserLibrary" />
@@ -225,15 +235,6 @@
           <AssociationSet Name="FK_Waitlist_Users" Association="Digital_library_DBModel.FK_Waitlist_Users">
             <End Role="USERS" EntitySet="USERS" />
             <End Role="WAITLIST" EntitySet="WAITLIST" />
-          </AssociationSet>
-          <EntitySet Name="Reviews" EntityType="Digital_library_DBModel.Reviews" />
-          <AssociationSet Name="FK_Reviews_Books" Association="Digital_library_DBModel.FK_Reviews_Books">
-            <End Role="Books" EntitySet="Books" />
-            <End Role="Reviews" EntitySet="Reviews" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Reviews_Users" Association="Digital_library_DBModel.FK_Reviews_Users">
-            <End Role="USERS" EntitySet="USERS" />
-            <End Role="Reviews" EntitySet="Reviews" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Books">
@@ -246,9 +247,10 @@
           <Property Name="Price" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="CopiesAvailable" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="ImageUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="age" Type="Int32" />
           <NavigationProperty Name="CART" Relationship="Digital_library_DBModel.FK__CART__book_id__787EE5A0" FromRole="Books" ToRole="CART" />
-          <NavigationProperty Name="WAITLIST" Relationship="Digital_library_DBModel.FK_Waitlist_Books" FromRole="Books" ToRole="WAITLIST" />
           <NavigationProperty Name="Reviews" Relationship="Digital_library_DBModel.FK_Reviews_Books" FromRole="Books" ToRole="Reviews" />
+          <NavigationProperty Name="WAITLIST" Relationship="Digital_library_DBModel.FK_Waitlist_Books" FromRole="Books" ToRole="WAITLIST" />
         </EntityType>
         <EntityType Name="CART">
           <Key>
@@ -261,6 +263,19 @@
           <Property Name="date_added" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK__CART__book_id__787EE5A0" FromRole="CART" ToRole="Books" />
           <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK__CART__user_id__778AC167" FromRole="CART" ToRole="USERS" />
+        </EntityType>
+        <EntityType Name="Reviews">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="User_ID" Type="Int32" Nullable="false" />
+          <Property Name="Book_ID" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Rating" Type="Int32" />
+          <Property Name="Feedback" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ReviewDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK_Reviews_Books" FromRole="Reviews" ToRole="Books" />
+          <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK_Reviews_Users" FromRole="Reviews" ToRole="USERS" />
         </EntityType>
         <EntityType Name="UserLibrary">
           <Key>
@@ -285,9 +300,9 @@
           <Property Name="registration_date" Type="DateTime" Precision="3" />
           <Property Name="isAdmin" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="CART" Relationship="Digital_library_DBModel.FK__CART__user_id__778AC167" FromRole="USERS" ToRole="CART" />
+          <NavigationProperty Name="Reviews" Relationship="Digital_library_DBModel.FK_Reviews_Users" FromRole="USERS" ToRole="Reviews" />
           <NavigationProperty Name="UserLibrary" Relationship="Digital_library_DBModel.FK_UserLibrary_Users" FromRole="USERS" ToRole="UserLibrary" />
           <NavigationProperty Name="WAITLIST" Relationship="Digital_library_DBModel.FK_Waitlist_Users" FromRole="USERS" ToRole="WAITLIST" />
-          <NavigationProperty Name="Reviews" Relationship="Digital_library_DBModel.FK_Reviews_Users" FromRole="USERS" ToRole="Reviews" />
         </EntityType>
         <EntityType Name="WAITLIST">
           <Key>
@@ -309,6 +324,20 @@
             </Principal>
             <Dependent Role="CART">
               <PropertyRef Name="book_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Reviews_Books">
+          <End Type="Digital_library_DBModel.Books" Role="Books" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="Digital_library_DBModel.Reviews" Role="Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Books">
+              <PropertyRef Name="Book_ID" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="Book_ID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -338,6 +367,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Reviews_Users">
+          <End Type="Digital_library_DBModel.USERS" Role="USERS" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="Digital_library_DBModel.Reviews" Role="Reviews" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USERS">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="Reviews">
+              <PropertyRef Name="User_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_UserLibrary_Users">
           <End Type="Digital_library_DBModel.USERS" Role="USERS" Multiplicity="0..1" />
           <End Type="Digital_library_DBModel.UserLibrary" Role="UserLibrary" Multiplicity="*" />
@@ -364,48 +407,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Reviews">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="User_ID" Type="Int32" Nullable="false" />
-          <Property Name="Book_ID" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Rating" Type="Int32" />
-          <Property Name="Feedback" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ReviewDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK_Reviews_Books" FromRole="Reviews" ToRole="Books" />
-          <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK_Reviews_Users" FromRole="Reviews" ToRole="USERS" />
-        </EntityType>
-        <Association Name="FK_Reviews_Books">
-          <End Type="Digital_library_DBModel.Books" Role="Books" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="Digital_library_DBModel.Reviews" Role="Reviews" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Books">
-              <PropertyRef Name="Book_ID" />
-            </Principal>
-            <Dependent Role="Reviews">
-              <PropertyRef Name="Book_ID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Reviews_Users">
-          <End Type="Digital_library_DBModel.USERS" Role="USERS" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="Digital_library_DBModel.Reviews" Role="Reviews" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="USERS">
-              <PropertyRef Name="user_id" />
-            </Principal>
-            <Dependent Role="Reviews">
-              <PropertyRef Name="User_ID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -414,6 +416,7 @@
           <EntitySetMapping Name="Books">
             <EntityTypeMapping TypeName="Digital_library_DBModel.Books">
               <MappingFragment StoreEntitySet="Books">
+                <ScalarProperty Name="age" ColumnName="age" />
                 <ScalarProperty Name="ImageUrl" ColumnName="ImageUrl" />
                 <ScalarProperty Name="CopiesAvailable" ColumnName="CopiesAvailable" />
                 <ScalarProperty Name="Price" ColumnName="Price" />
@@ -431,6 +434,18 @@
                 <ScalarProperty Name="book_id" ColumnName="book_id" />
                 <ScalarProperty Name="user_id" ColumnName="user_id" />
                 <ScalarProperty Name="cart_id" ColumnName="cart_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Reviews">
+            <EntityTypeMapping TypeName="Digital_library_DBModel.Reviews">
+              <MappingFragment StoreEntitySet="Reviews">
+                <ScalarProperty Name="ReviewDate" ColumnName="ReviewDate" />
+                <ScalarProperty Name="Feedback" ColumnName="Feedback" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
+                <ScalarProperty Name="User_ID" ColumnName="User_ID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -464,18 +479,6 @@
                 <ScalarProperty Name="DateAdded" ColumnName="DateAdded" />
                 <ScalarProperty Name="User_ID" ColumnName="User_ID" />
                 <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Reviews">
-            <EntityTypeMapping TypeName="Digital_library_DBModel.Reviews">
-              <MappingFragment StoreEntitySet="Reviews">
-                <ScalarProperty Name="ReviewDate" ColumnName="ReviewDate" />
-                <ScalarProperty Name="Feedback" ColumnName="Feedback" />
-                <ScalarProperty Name="Rating" ColumnName="Rating" />
-                <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
-                <ScalarProperty Name="User_ID" ColumnName="User_ID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
