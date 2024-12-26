@@ -147,6 +147,9 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\UserProfileController.cs" />
     <Compile Include="EmailService.cs" />
+    <Compile Include="Models\Authors.cs">
+      <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Books.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>

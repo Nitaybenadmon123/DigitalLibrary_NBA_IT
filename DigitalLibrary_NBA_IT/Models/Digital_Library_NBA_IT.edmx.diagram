@@ -8,7 +8,7 @@
         <EntityTypeShape EntityType="Digital_library_DBModel.Books" Width="1.5" PointX="0.75" PointY="2" />
         <EntityTypeShape EntityType="Digital_library_DBModel.CART" Width="1.5" PointX="3" PointY="2.25" />
         <EntityTypeShape EntityType="Digital_library_DBModel.Reviews" Width="1.5" PointX="6" PointY="6.125" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.UserLibrary" Width="1.5" PointX="3" PointY="16" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.UserLibrary" Width="1.5" PointX="2.875" PointY="10.625" />
         <EntityTypeShape EntityType="Digital_library_DBModel.USERS" Width="1.5" PointX="0.75" PointY="6" />
         <EntityTypeShape EntityType="Digital_library_DBModel.WAITLIST" Width="1.5" PointX="3" PointY="6.375" />
         <AssociationConnector Association="Digital_library_DBModel.FK__CART__book_id__787EE5A0" />
@@ -18,6 +18,8 @@
         <AssociationConnector Association="Digital_library_DBModel.FK_Reviews_Users" />
         <AssociationConnector Association="Digital_library_DBModel.FK_UserLibrary_Users" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Waitlist_Users" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.Authors" Width="1.5" PointX="5.625" PointY="9.75" />
+        <AssociationConnector Association="Digital_library_DBModel.FK_Authors_Books" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

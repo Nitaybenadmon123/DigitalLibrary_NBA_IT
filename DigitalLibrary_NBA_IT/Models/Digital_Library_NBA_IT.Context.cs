@@ -31,5 +31,6 @@ namespace DigitalLibrary_NBA_IT.Models
         public virtual DbSet<UserLibrary> UserLibrary { get; set; }
         public virtual DbSet<USERS> USERS { get; set; }
         public virtual DbSet<WAITLIST> WAITLIST { get; set; }
+        public virtual DbSet<Authors> Authors { get; set; }
     }
 }
