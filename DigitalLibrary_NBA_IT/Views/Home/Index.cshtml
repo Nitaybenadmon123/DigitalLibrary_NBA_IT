@@ -7,10 +7,10 @@
 <!-- הודעת הצלחה -->
 @if (TempData["Message"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["Message"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    @TempData["Message"]
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 }
 
 <!-- תמונת רקע לכל העמוד -->
@@ -26,15 +26,15 @@
     }
 
     .welcome-text {
-        background-color: rgba(255, 255, 255, 0.8); /* רקע לבן שקוף */
-        color: #000; /* צבע טקסט שחור */
+        background-color: rgba(255, 255, 255, 0.8);
+        color: #000;
         padding: 10px 20px;
         display: inline-block;
-        border-radius: 8px; /* פינות מעוגלות */
-        font-size: 2rem; /* גודל פונט */
-        font-weight: bold; /* טקסט מודגש */
+        border-radius: 8px;
+        font-size: 2rem;
+        font-weight: bold;
         text-align: center;
-        margin: 0 auto; /* ממרכז את האלמנט */
+        margin: 0 auto;
     }
 
     .search-bar {
@@ -118,9 +118,29 @@
                 <input type="text" name="query" class="form-control" placeholder="Search for a book by title, author, or publisher..." value="@ViewBag.Query" />
                 <div class="input-group-append">
                     <button class="btn btn-primary" type="submit">Search</button>
+                    <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#authorsModal">
+                        View Authors
+                    </button>
                 </div>
             </div>
         </form>
+    </div>
+
+    <!-- Modal להצגת המחברים -->
+    <div class="modal fade" id="authorsModal" tabindex="-1" aria-labelledby="authorsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authorsModalLabel">Authors</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="authorsList">
+                        <!-- רשימת המחברים תיטען כאן -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- תצוגת הספרים -->
@@ -129,61 +149,84 @@
         {
             foreach (var book in Model)
             {
-                decimal price = 0; // משתנה לאחסון המחיר
-                decimal parsedPrice; // משתנה להמרת המחיר
+                decimal price = 0;
+                decimal parsedPrice;
 
-                // המרה ובדיקה ישירה
                 if (!string.IsNullOrEmpty(book.Price.Trim()) && decimal.TryParse(book.Price.Trim(), out parsedPrice))
                 {
-                    price = parsedPrice; // עדכון המחיר למספר
+                    price = parsedPrice;
                 }
 
-                // בדיקה אם הספר פופולרי
                 bool isPopular = price > 20;
 
-                <div class="col-md-3 mb-4">
-                    <div class="card">
-                        <img src="@(!string.IsNullOrEmpty(book.ImageUrl)
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <img src="@(!string.IsNullOrEmpty(book.ImageUrl)
                                     ? book.ImageUrl.Replace("/upload/", "/upload/w_300,h_200,c_fill,dpr_2.0/")
                                     : "https://via.placeholder.com/300x200?text=No+Image")"
-                             class="card-img-top img-fixed"
-                             alt="@book.Title"
-                             onerror="this.onerror=null; this.style.display='none';">
-                        <div class="card-body">
-                            <h5 class="card-title">@book.Title</h5>
-                            <p class="card-text">Publisher: @book.Publish</p>
-                            <p class="card-text">Age: @book.age+</p>
-                            <p class="card-text">Price (Buy): $@(price.ToString("F2"))</p>
-                             
+                     class="card-img-top img-fixed"
+                     alt="@book.Title"
+                     onerror="this.onerror=null; this.style.display='none';">
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text">Publisher: @book.Publish</p>
+                    <p class="card-text">Age: @book.age+</p>
+                    <p class="card-text">Price (Buy): $@(price.ToString("F2"))</p>
 
-                            @if (!isPopular)
-                            {
-                                <p class="card-text">Price (Borrow): $@(Math.Round(price / 4, 2))</p>
-                            }
-                            else
-                            {
-                                <span class="popular-badge">Popular Book</span>
-                            }
-                            <p class="card-text">Copies Available: @book.CopiesAvailable</p>
+                    @if (!isPopular)
+                    {
+                    <p class="card-text">Price (Borrow): $@(Math.Round(price / 4, 2))</p>
+                    }
+                    else
+                    {
+                    <span class="popular-badge">Popular Book</span>
+                    }
+                    <p class="card-text">Copies Available: @book.CopiesAvailable</p>
 
-                            <!-- כפתורים מסודרים בשורה -->
-                            <div class="button-container">
-                                <a href="@Url.Action("AddToCart", "Home", new { id = book.Book_ID.ToString().Trim(), type = "buy" })" class="btn btn-primary">Buy</a>
-                                @if (!isPopular)
-                                {
-                                    <a href="@Url.Action("AddToCart", "Home", new { id = book.Book_ID.ToString().Trim(), type = "borrow" })" class="btn btn-secondary">Borrow</a>
-                                }
-                            </div>
-                        </div>
+                    <div class="button-container">
+                        <a href="@Url.Action("AddToCart", "Home", new { id = book.Book_ID.ToString().Trim(), type = "buy" })" class="btn btn-primary">Buy</a>
+                        @if (!isPopular)
+                        {
+                        <a href="@Url.Action("AddToCart", "Home", new { id = book.Book_ID.ToString().Trim(), type = "borrow" })" class="btn btn-secondary">Borrow</a>
+                        }
                     </div>
                 </div>
+            </div>
+        </div>
             }
         }
         else
         {
-            <div class="col-12">
-                <p class="text-center text-danger">No books found matching your search.</p>
-            </div>
+        <div class="col-12">
+            <p class="text-center text-danger">No books found matching your search.</p>
+        </div>
         }
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const authorsList = document.getElementById("authorsList");
+
+        fetch('@Url.Action("GetAuthors", "Home")')
+            .then(response => response.json())
+            .then(authors => {
+                authorsList.innerHTML = authors.map(author => `
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${author.Name}</h5>
+                                <p class="card-text">${author.Bio}</p>
+                                <button class="btn btn-primary btn-sm" onclick="filterBooksByAuthor('${author.Name}')">View Books</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join("");
+            })
+            .catch(error => console.error("Error loading authors:", error));
+    });
+
+    function filterBooksByAuthor(authorName) {
+        window.location.href = `@Url.Action("Index", "Home")?authorName=${encodeURIComponent(authorName)}`;
+    }
+</script>
