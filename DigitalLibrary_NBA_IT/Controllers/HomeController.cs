@@ -10,19 +10,56 @@ namespace DigitalLibrary_NBA_IT.Controllers
     {
         // חיבור למסד הנתונים
         private Digital_library_DBEntities db = new Digital_library_DBEntities();
+        public JsonResult GetAuthors()
+        {
+            var authors = db.Authors
+                .GroupBy(a => new { a.Name, a.Bio })
+                .Select(g => new
+                {
+                    Name = g.Key.Name,
+                    Bio = g.Key.Bio
+                }).ToList();
+
+            return Json(authors, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetBooksByAuthor(string authorName)
+        {
+            var books = db.Authors
+                .Where(a => a.Name == authorName) // מסנן לפי שם המחבר
+                .Select(a => a.Books) // מבצע נוויגציה לטבלת הספרים
+                .SelectMany(book => db.Books.Where(b => b.Book_ID == book.Book_ID)) // מבטיח התאמה לספרים של המחבר בלבד
+                .Distinct()
+                .ToList();
+
+            return Json(books, JsonRequestBehavior.AllowGet);
+        }
+
+
+
 
         // פעולה ראשית להצגת הספרים וחיפוש
-        public ActionResult Index(string query = "")
+        public ActionResult Index(string query = "", string authorName = "")
         {
-            var books = string.IsNullOrEmpty(query)
-                        ? db.Books.ToList()
-                        : db.Books.Where(b => b.Title.Contains(query)
-                                           || b.Publish.Contains(query))
-                                  .ToList();
+            var books = db.Books.AsQueryable();
+
+            // חיפוש לפי שם הספר או המו"ל
+            if (!string.IsNullOrEmpty(query))
+            {
+                books = books.Where(b => b.Title.Contains(query) || b.Publish.Contains(query));
+            }
+
+            // סינון לפי שם המחבר
+            if (!string.IsNullOrEmpty(authorName))
+            {
+                books = books.Where(b => db.Authors.Any(a => a.Name == authorName && a.Book_ID == b.Book_ID));
+            }
 
             ViewBag.Query = query; // שמירה על השאילתה בתיבת החיפוש
-            return View(books);
+            ViewBag.AuthorName = authorName; // שמירה על שם המחבר בתיבת החיפוש
+
+            return View(books.ToList());
         }
+
 
         public ActionResult About()
         {
