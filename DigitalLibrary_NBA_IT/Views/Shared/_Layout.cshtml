@@ -56,12 +56,24 @@
                 </ul>
 
                 <!-- כפתור עגלה -->
-                <a href="@Url.Action("Cart", "Home")" class="btn btn-outline-light position-relative">
-                    <i class="fas fa-shopping-cart"></i> Cart
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        @Session["CartCount"] <!-- מונה כמות פריטים בעגלה -->
-                    </span>
-                </a>
+                @if (Session["CartCount"] != null && (int)Session["CartCount"] > 0)
+                {
+                    <!-- מציג עגלה עם אדום אם יש פריטים -->
+                    <a href="@Url.Action("Cart", "Home")" class="btn btn-outline-light position-relative">
+                        <i class="fas fa-shopping-cart"></i> Cart
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            @Session["CartCount"] <!-- מונה כמות פריטים בעגלה -->
+                        </span>
+                    </a>
+                }
+                else if (Session["CartCount"] == null || (int)Session["CartCount"] == 0)
+                {
+                    <!-- מציג עגלה בלי אדום אם אין פריטים -->
+                    <a href="@Url.Action("Cart", "Home")" class="btn btn-outline-light">
+                        <i class="fas fa-shopping-cart"></i> Cart
+                    </a>
+                }
+
 
             </div>
         </div>

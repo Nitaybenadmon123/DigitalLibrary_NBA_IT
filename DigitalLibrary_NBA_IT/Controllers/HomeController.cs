@@ -35,6 +35,28 @@ namespace DigitalLibrary_NBA_IT.Controllers
             ViewBag.Message = "Your contact page.";
             return View();
         }
+        public ActionResult RemoveFromCart(string bookId)
+        {
+            // קבלת רשימת העגלה מה-Session
+            var cart = Session["Cart"] as List<CartItem> ?? new List<CartItem>();
+
+            // מציאת הספר לפי מזהה
+            var itemToRemove = cart.FirstOrDefault(c => c.Book.Book_ID == bookId); // התאמת שם השדה
+            if (itemToRemove != null)
+            {
+                cart.Remove(itemToRemove); // הסרת הספר מהעגלה
+            }
+
+            // שמירה חזרה ל-Session
+            Session["Cart"] = cart;
+
+            // עדכון ספירת הפריטים בעגלה
+            Session["CartCount"] = cart.Count;
+
+            // חזרה לעמוד העגלה
+            return RedirectToAction("Cart");
+        }
+
 
         // פעולה להוספת ספר לעגלה
         public ActionResult AddToCart(string id, string type)
