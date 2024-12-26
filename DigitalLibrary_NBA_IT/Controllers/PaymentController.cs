@@ -61,24 +61,33 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 hasError = true;
             }
 
-            // אם יש טעויות, נבצע הפניה חזרה לדף התשלום
             if (hasError)
             {
                 TempData["Message"] = "Payment failed. Please fix the errors and try again.";
                 return RedirectToAction("Payment");
             }
 
-            // במקרה שהכל תקין
-            decimal totalAmount = TempData.ContainsKey("TotalAmount") ? (decimal)TempData["TotalAmount"] : 0;
+            // Retrieve cart and calculate total amount
+            var cart = Session["Cart"] as List<CartItem> ?? new List<CartItem>();
+            decimal totalAmount = cart.Sum(item =>
+            {
+                var priceString = item.Book.Price.Trim();
+                decimal price = 0;
+                if (!string.IsNullOrEmpty(priceString) && decimal.TryParse(priceString, out decimal parsedPrice))
+                {
+                    return item.Type == "borrow" ? parsedPrice / 4 : parsedPrice;
+                }
+                return price;
+            });
 
+            // Store total amount in TempData
+            TempData["TotalAmount"] = totalAmount;
+
+            // Simulate successful payment
             TempData["Message"] = $"Payment successful! Total: ${totalAmount:F2}.";
             ClearCart(); // Clear the cart after payment
             return RedirectToAction("Index", "Home");
         }
-
-
-
-
 
 
         private void ClearCart()
