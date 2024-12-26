@@ -144,7 +144,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             var book = new Books
             {
-                Book_ID = newBookId.ToString().PadLeft(10), // יישור מספר הספר לעד 10 תווים
+                Book_ID = newBookId.ToString(), // יישור מספר הספר לעד 10 תווים
                 Title = Title,
                 Publish = Publish,
                 Price = Price.ToString("0.00"),

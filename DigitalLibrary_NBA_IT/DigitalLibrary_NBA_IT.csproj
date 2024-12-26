@@ -144,6 +144,7 @@
     <Compile Include="Controllers\BookController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\LibraryDbContext.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\UserProfileController.cs" />
     <Compile Include="EmailService.cs" />
@@ -271,6 +272,7 @@
     <Content Include="Views\User\ForgotPassword.cshtml" />
     <Content Include="Views\Admin\AddBookView.cshtml" />
     <Content Include="Views\Home\Cart.cshtml" />
+    <Content Include="Views\Payment\Payment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
