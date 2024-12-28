@@ -1,5 +1,23 @@
-﻿<form method="post" action="@Url.Action("ProcessPayment", "Payment")">
+﻿<form method="post" action="@Url.Action("ProcessPayment", "Payment")" onsubmit="return handleFormSubmit();">
     @Html.AntiForgeryToken()
+
+    <style>
+        #loadingSpinner {
+            display: none; /* עיגול הטעינה מוסתר כברירת מחדל */
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* עיצוב מותאם */
+        .d-none {
+            display: none !important; /* וידוא הסתרה מוחלטת */
+        }
+
+        .btn-primary[disabled] {
+            background-color: #6c757d; /* עיצוב לכפתור מושבת */
+            cursor: not-allowed;
+        }
+    </style>
 
     <h5 class="mt-4">Payment Details</h5>
 
@@ -39,7 +57,16 @@
         }
     </div>
 
+    <!-- כפתור תשלום -->
     <button type="submit" class="btn btn-primary w-100 mt-4">Pay $@TempData["TotalAmount"]</button>
+
+    <!-- עיגול טעינה -->
+    <div id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">טוען פרטי אשראי...</p>
+    </div>
 
     @if (TempData["Message"] != null)
     {
@@ -47,42 +74,47 @@
     }
 </form>
 
-
+<form method="post" action="@Url.Action("PayWithPayPal", "Payment")">
+    <input type="hidden" name="totalAmount" value="@TempData["TotalAmount"]" />
+    <button type="submit" class="btn btn-primary">Pay with PayPal</button>
+</form>
 
 
 <script>
     function validatePaymentForm() {
         const creditCardInput = document.getElementById("creditCard");
         const cvvInput = document.getElementById("cvv");
-        const creditCardError = document.getElementById("creditCardError");
-        const cvvError = document.getElementById("cvvError");
 
         let isValid = true;
 
         // Validate Credit Card Number
         if (creditCardInput.value.length !== 16 || isNaN(creditCardInput.value)) {
-            creditCardError.style.display = "block";
             isValid = false;
-        } else {
-            creditCardError.style.display = "none";
         }
 
         // Validate CVV
         if (cvvInput.value.length !== 3 || isNaN(cvvInput.value)) {
-            cvvError.style.display = "block";
             isValid = false;
-        } else {
-            cvvError.style.display = "none";
         }
-
-        if (idNumberInput.value.length !== 9 || isNaN(idNumberInput.value)) {
-            idNumberError.style.display = "block";
-            isValid = false;
-        } else {
-            idNumberError.style.display = "none";
-        }
-
 
         return isValid;
+    }
+
+    function handleFormSubmit() {
+        // בדוק אם הטופס תקין
+        if (!validatePaymentForm()) {
+            alert("Please correct the errors before submitting.");
+            return false;
+        }
+
+        // הצגת עיגול הטעינה
+        const loadingSpinner = document.getElementById("loadingSpinner");
+        loadingSpinner.style.display = "block";
+
+        // השבתת הכפתור למניעת שליחה כפולה
+        const submitButton = document.querySelector("button[type='submit']");
+        submitButton.disabled = true;
+
+        return true; // אפשר לשלוח את הטופס
     }
 </script>

@@ -105,6 +105,31 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             db.SaveChanges(); // שמירת השינויים במסד הנתונים
 
+            try
+            {
+                var emailService = new EmailService();
+                var userEmail = GetUserEmail(); // פונקציה לשליפת מייל המשתמש הנוכחי
+                string subject = "Purchase Confirmation Digital Library";
+
+                // בניית גוף המייל
+                string body = "<h3>Thank you for your purchase!</h3>";
+                body += "<p>Here are the details of your transaction:</p>";
+                body += "<ul>";
+                foreach (var item in cart)
+                {
+                    body += $"<li><strong>Book:</strong> {item.Book.Title} - {(item.Type == "borrow" ? "Borrowed" : "Purchased")}</li>";
+                }
+                body += "</ul>";
+                body += $"<p><strong>Total Amount:</strong> ${totalAmount:F2}</p>";
+                body += $"<p><strong>Date:</strong> {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}</p>";
+
+                emailService.SendEmail(userEmail, subject, body);
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = "Payment successful, but failed to send confirmation email.";
+            }
+
             // Simulate successful payment
             TempData["TotalAmount"] = totalAmount;
             TempData["Message"] = $"Payment successful! Total: ${totalAmount:F2}.";
@@ -141,5 +166,46 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 return price;
             });
         }
+
+        private string GetUserEmail()
+        {
+            // שליפת מזהה המשתמש מתוך ה-Session
+            int userId = GetCurrentUserId();
+
+            // שליפת כתובת האימייל ממסד הנתונים
+            var user = db.USERS.FirstOrDefault(u => u.user_id == userId);
+            return user?.email ?? "guest@example.com"; // ברירת מחדל אם לא נמצא
+        }
+
+        public ActionResult PayWithPayPal(decimal totalAmount)
+        {
+            var paypalService = new PayPalService();
+
+            // כתובות חזרה (URL)
+            string returnUrl = Url.Action("PaymentSuccess", "Payment", null, Request.Url.Scheme);
+            string cancelUrl = Url.Action("PaymentCancelled", "Payment", null, Request.Url.Scheme);
+
+            // יצירת תשלום
+            var payment = paypalService.CreatePayment(returnUrl, cancelUrl, totalAmount);
+
+            // ניתוב ל-PayPal
+            var approvalUrl = payment.links.FirstOrDefault(link => link.rel == "approval_url").href;
+            return Redirect(approvalUrl);
+        }
+
+        public ActionResult PaymentSuccess(string paymentId, string token, string PayerID)
+        {
+            // טיפול בתשלום שהושלם
+            TempData["Message"] = "Payment successful!";
+            return RedirectToAction("Index", "Home");
+        }
+
+        public ActionResult PaymentCancelled()
+        {
+            // טיפול בתשלום שבוטל
+            TempData["Message"] = "Payment cancelled.";
+            return RedirectToAction("Index", "Home");
+        }
+
     }
 }
