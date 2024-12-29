@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Add Review";
+}
+
+<h2 class="text-center text-primary mt-4">Add Review for @ViewBag.BookTitle</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form method="post" action="@Url.Action("AddReview", "Library")" class="mt-4">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="bookId" value="@Request.QueryString["id"]" />
+
+    <div class="mb-3">
+        <label for="reviewText" class="form-label">Review</label>
+        <textarea name="reviewText" id="reviewText" class="form-control" rows="5" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="rating" class="form-label">Rating</label>
+        <select name="rating" id="rating" class="form-select" required>
+            <option value="">Select a rating</option>
+            <option value="1">1 - Poor</option>
+            <option value="2">2 - Fair</option>
+            <option value="3">3 - Good</option>
+            <option value="4">4 - Very Good</option>
+            <option value="5">5 - Excellent</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Review</button>
+</form>

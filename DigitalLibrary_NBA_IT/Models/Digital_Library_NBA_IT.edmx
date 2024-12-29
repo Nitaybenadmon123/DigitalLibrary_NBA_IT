@@ -53,7 +53,7 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="User_ID" Type="int" />
-          <Property Name="Book_ID" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Book_ID" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="PurchaseDate" Type="datetime" Nullable="false" />
           <Property Name="IsBorrowed" Type="bit" Nullable="false" />
           <Property Name="ExpiryDate" Type="datetime" />
@@ -142,6 +142,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_UserLibrary_Books">
+          <End Role="Books" Type="Self.Books" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="UserLibrary" Type="Self.UserLibrary" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Books">
+              <PropertyRef Name="Book_ID" />
+            </Principal>
+            <Dependent Role="UserLibrary">
+              <PropertyRef Name="Book_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_UserLibrary_Users">
           <End Role="USERS" Type="Self.USERS" Multiplicity="0..1" />
           <End Role="UserLibrary" Type="Self.UserLibrary" Multiplicity="*" />
@@ -210,6 +224,10 @@
             <End Role="USERS" EntitySet="USERS" />
             <End Role="Reviews" EntitySet="Reviews" />
           </AssociationSet>
+          <AssociationSet Name="FK_UserLibrary_Books" Association="Self.FK_UserLibrary_Books">
+            <End Role="Books" EntitySet="Books" />
+            <End Role="UserLibrary" EntitySet="UserLibrary" />
+          </AssociationSet>
           <AssociationSet Name="FK_UserLibrary_Users" Association="Self.FK_UserLibrary_Users">
             <End Role="USERS" EntitySet="USERS" />
             <End Role="UserLibrary" EntitySet="UserLibrary" />
@@ -228,12 +246,17 @@
     <edmx:ConceptualModels>
       <Schema Namespace="Digital_library_DBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="Digital_library_DBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Authors" EntityType="Digital_library_DBModel.Authors" />
           <EntitySet Name="Books" EntityType="Digital_library_DBModel.Books" />
           <EntitySet Name="CART" EntityType="Digital_library_DBModel.CART" />
           <EntitySet Name="Reviews" EntityType="Digital_library_DBModel.Reviews" />
           <EntitySet Name="UserLibrary" EntityType="Digital_library_DBModel.UserLibrary" />
           <EntitySet Name="USERS" EntityType="Digital_library_DBModel.USERS" />
           <EntitySet Name="WAITLIST" EntityType="Digital_library_DBModel.WAITLIST" />
+          <AssociationSet Name="FK_Authors_Books" Association="Digital_library_DBModel.FK_Authors_Books">
+            <End Role="Books" EntitySet="Books" />
+            <End Role="Authors" EntitySet="Authors" />
+          </AssociationSet>
           <AssociationSet Name="FK__CART__book_id__787EE5A0" Association="Digital_library_DBModel.FK__CART__book_id__787EE5A0">
             <End Role="Books" EntitySet="Books" />
             <End Role="CART" EntitySet="CART" />
@@ -241,6 +264,10 @@
           <AssociationSet Name="FK_Reviews_Books" Association="Digital_library_DBModel.FK_Reviews_Books">
             <End Role="Books" EntitySet="Books" />
             <End Role="Reviews" EntitySet="Reviews" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserLibrary_Books" Association="Digital_library_DBModel.FK_UserLibrary_Books">
+            <End Role="Books" EntitySet="Books" />
+            <End Role="UserLibrary" EntitySet="UserLibrary" />
           </AssociationSet>
           <AssociationSet Name="FK_Waitlist_Books" Association="Digital_library_DBModel.FK_Waitlist_Books">
             <End Role="Books" EntitySet="Books" />
@@ -262,12 +289,17 @@
             <End Role="USERS" EntitySet="USERS" />
             <End Role="WAITLIST" EntitySet="WAITLIST" />
           </AssociationSet>
-          <EntitySet Name="Authors" EntityType="Digital_library_DBModel.Authors" />
-          <AssociationSet Name="FK_Authors_Books" Association="Digital_library_DBModel.FK_Authors_Books">
-            <End Role="Books" EntitySet="Books" />
-            <End Role="Authors" EntitySet="Authors" />
-          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Authors">
+          <Key>
+            <PropertyRef Name="Author_ID" />
+          </Key>
+          <Property Name="Author_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Bio" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Book_ID" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK_Authors_Books" FromRole="Authors" ToRole="Books" />
+        </EntityType>
         <EntityType Name="Books">
           <Key>
             <PropertyRef Name="Book_ID" />
@@ -279,10 +311,11 @@
           <Property Name="CopiesAvailable" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="ImageUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="age" Type="Int32" />
+          <NavigationProperty Name="Authors" Relationship="Digital_library_DBModel.FK_Authors_Books" FromRole="Books" ToRole="Authors" />
           <NavigationProperty Name="CART" Relationship="Digital_library_DBModel.FK__CART__book_id__787EE5A0" FromRole="Books" ToRole="CART" />
           <NavigationProperty Name="Reviews" Relationship="Digital_library_DBModel.FK_Reviews_Books" FromRole="Books" ToRole="Reviews" />
+          <NavigationProperty Name="UserLibrary" Relationship="Digital_library_DBModel.FK_UserLibrary_Books" FromRole="Books" ToRole="UserLibrary" />
           <NavigationProperty Name="WAITLIST" Relationship="Digital_library_DBModel.FK_Waitlist_Books" FromRole="Books" ToRole="WAITLIST" />
-          <NavigationProperty Name="Authors" Relationship="Digital_library_DBModel.FK_Authors_Books" FromRole="Books" ToRole="Authors" />
         </EntityType>
         <EntityType Name="CART">
           <Key>
@@ -315,10 +348,11 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="User_ID" Type="Int32" />
-          <Property Name="Book_ID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Book_ID" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="PurchaseDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IsBorrowed" Type="Boolean" Nullable="false" />
           <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK_UserLibrary_Books" FromRole="UserLibrary" ToRole="Books" />
           <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK_UserLibrary_Users" FromRole="UserLibrary" ToRole="USERS" />
         </EntityType>
         <EntityType Name="USERS">
@@ -347,6 +381,18 @@
           <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK_Waitlist_Books" FromRole="WAITLIST" ToRole="Books" />
           <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK_Waitlist_Users" FromRole="WAITLIST" ToRole="USERS" />
         </EntityType>
+        <Association Name="FK_Authors_Books">
+          <End Type="Digital_library_DBModel.Books" Role="Books" Multiplicity="1" />
+          <End Type="Digital_library_DBModel.Authors" Role="Authors" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Books">
+              <PropertyRef Name="Book_ID" />
+            </Principal>
+            <Dependent Role="Authors">
+              <PropertyRef Name="Book_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__CART__book_id__787EE5A0">
           <End Type="Digital_library_DBModel.Books" Role="Books" Multiplicity="1" />
           <End Type="Digital_library_DBModel.CART" Role="CART" Multiplicity="*" />
@@ -369,6 +415,20 @@
               <PropertyRef Name="Book_ID" />
             </Principal>
             <Dependent Role="Reviews">
+              <PropertyRef Name="Book_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserLibrary_Books">
+          <End Type="Digital_library_DBModel.Books" Role="Books" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="Digital_library_DBModel.UserLibrary" Role="UserLibrary" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Books">
+              <PropertyRef Name="Book_ID" />
+            </Principal>
+            <Dependent Role="UserLibrary">
               <PropertyRef Name="Book_ID" />
             </Dependent>
           </ReferentialConstraint>
@@ -439,34 +499,22 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Authors">
-          <Key>
-            <PropertyRef Name="Author_ID" />
-          </Key>
-          <Property Name="Author_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Bio" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Book_ID" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
-          <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK_Authors_Books" FromRole="Authors" ToRole="Books" />
-        </EntityType>
-        <Association Name="FK_Authors_Books">
-          <End Type="Digital_library_DBModel.Books" Role="Books" Multiplicity="1" />
-          <End Type="Digital_library_DBModel.Authors" Role="Authors" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Books">
-              <PropertyRef Name="Book_ID" />
-            </Principal>
-            <Dependent Role="Authors">
-              <PropertyRef Name="Book_ID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="Digital_library_DBModelStoreContainer" CdmEntityContainer="Digital_library_DBEntities">
+          <EntitySetMapping Name="Authors">
+            <EntityTypeMapping TypeName="Digital_library_DBModel.Authors">
+              <MappingFragment StoreEntitySet="Authors">
+                <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
+                <ScalarProperty Name="Bio" ColumnName="Bio" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Author_ID" ColumnName="Author_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Books">
             <EntityTypeMapping TypeName="Digital_library_DBModel.Books">
               <MappingFragment StoreEntitySet="Books">
@@ -534,16 +582,6 @@
                 <ScalarProperty Name="User_ID" ColumnName="User_ID" />
                 <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Authors">
-            <EntityTypeMapping TypeName="Digital_library_DBModel.Authors">
-              <MappingFragment StoreEntitySet="Authors">
-                <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
-                <ScalarProperty Name="Bio" ColumnName="Bio" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Author_ID" ColumnName="Author_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -104,7 +104,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
             }
 
             db.SaveChanges(); // שמירת השינויים במסד הנתונים
-
+            //שליחת מייל למשתמש לאחר קנייה מוצלחת 
             try
             {
                 var emailService = new EmailService();

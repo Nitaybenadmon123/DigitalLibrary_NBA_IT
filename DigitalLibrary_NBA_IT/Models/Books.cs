@@ -17,10 +17,11 @@ namespace DigitalLibrary_NBA_IT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Books()
         {
+            this.Authors = new HashSet<Authors>();
             this.CART = new HashSet<CART>();
             this.Reviews = new HashSet<Reviews>();
+            this.UserLibrary = new HashSet<UserLibrary>();
             this.WAITLIST = new HashSet<WAITLIST>();
-            this.Authors = new HashSet<Authors>();
         }
     
         public string Book_ID { get; set; }
@@ -32,12 +33,14 @@ namespace DigitalLibrary_NBA_IT.Models
         public Nullable<int> age { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Authors> Authors { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CART> CART { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Reviews> Reviews { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<WAITLIST> WAITLIST { get; set; }
+        public virtual ICollection<UserLibrary> UserLibrary { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Authors> Authors { get; set; }
+        public virtual ICollection<WAITLIST> WAITLIST { get; set; }
     }
 }
