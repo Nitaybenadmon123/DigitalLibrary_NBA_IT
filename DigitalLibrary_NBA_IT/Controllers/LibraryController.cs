@@ -13,7 +13,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [HttpGet]
         public ActionResult PersonalLibrary()
         {
-            if (Session["UserId"] == null)
+            if (Session["UserID"] == null)
             {
                 TempData["Error"] = "You must be logged in to access your library.";
                 return RedirectToAction("Index", "Home");
@@ -41,7 +41,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult RemoveBook(string bookId)
         {
-            if (Session["UserId"] == null)
+            if (Session["UserID"] == null)
             {
                 TempData["Error"] = "You must be logged in to remove a book.";
                 return RedirectToAction("Index", "Home");
@@ -120,6 +120,47 @@ namespace DigitalLibrary_NBA_IT.Controllers
             TempData["Message"] = "Your review has been added successfully.";
             return RedirectToAction("PersonalLibrary");
         }
+
+        [HttpGet]
+        public ActionResult DownloadBook(string bookId, string format)
+        {
+            if (Session["UserID"] == null)
+            {
+                TempData["Error"] = "You must be logged in to download a book.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (string.IsNullOrWhiteSpace(bookId) || string.IsNullOrWhiteSpace(format))
+            {
+                TempData["Error"] = "Book ID or format is missing.";
+                return RedirectToAction("PersonalLibrary");
+            }
+
+            // בדיקת ספרים במאגר
+            var book = db.Books.FirstOrDefault(b => b.Book_ID.Trim() == bookId.Trim());
+            if (book == null)
+            {
+                TempData["Error"] = "Book not found.";
+                return RedirectToAction("PersonalLibrary");
+            }
+
+            // בדיקת פורמט תקין
+            var allowedFormats = new[] { "mobi", "b2f", "epub", "pdf" };
+            if (!allowedFormats.Contains(format.ToLower()))
+            {
+                TempData["Error"] = "Invalid format selected.";
+                return RedirectToAction("PersonalLibrary");
+            }
+
+            // יצירת תוכן הקובץ הריק
+            var fileName = $"{book.Title}.{format}";
+            var fileContent = $"This is a placeholder file for the book '{book.Title}' in {format.ToUpper()} format.";
+
+            // הורדת הקובץ
+            var fileBytes = System.Text.Encoding.UTF8.GetBytes(fileContent);
+            return File(fileBytes, "application/octet-stream", fileName);
+        }
+
 
 
     }
