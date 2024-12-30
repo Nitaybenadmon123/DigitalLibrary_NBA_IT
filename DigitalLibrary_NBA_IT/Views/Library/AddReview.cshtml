@@ -11,7 +11,7 @@
 
 <form method="post" action="@Url.Action("AddReview", "Library")" class="mt-4">
     @Html.AntiForgeryToken()
-    <input type="hidden" name="bookId" value="@Request.QueryString["id"]" />
+    <input type="hidden" name="bookId" value="@ViewBag.BookId" />
 
     <div class="mb-3">
         <label for="reviewText" class="form-label">Review</label>
