@@ -9,7 +9,7 @@ namespace DigitalLibrary_NBA_IT
         private readonly string _clientId = "ATipu-7HyqwQ6UcEWeXgTlJms3dlJdj1ukgj8hCVR1iK48yNp_Nmyi5cj3Z-6MmxfSNgBTrj12SRIrNZ";
         private readonly string _clientSecret = "EBAdF0uuZe0Oz7EJ81X_vnwjfehsrwBSH_POQKeCgcebpHjeJ8B-_R1zztbyPgG_PUHmmw8-eVns2TR5";
 
-        private APIContext GetAPIContext()
+        public APIContext GetAPIContext()
         {
             var config = new Dictionary<string, string>
         {
