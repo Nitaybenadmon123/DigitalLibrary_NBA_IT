@@ -54,15 +54,42 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // פעולה לעריכת משתמש (שלב הבא)
         [HttpGet]
 
-        public ActionResult Details(int id)
+        public ActionResult Details(int? id)
         {
+            // בדיקת חיבור משתמש כמנהל
+            if (Session["UserID"] == null || !(Session["IsAdmin"] is bool isAdmin && isAdmin))
+            {
+                TempData["Message"] = "You must be logged in as an admin to access this page.";
+                return RedirectToAction("Login", "User");
+            }
+
+            // בדיקה אם `id` הוא null
+            if (id == null)
+            {
+                TempData["Message"] = "Invalid user ID.";
+                return RedirectToAction("ManageUsers", "Admin");
+            }
+
             var user = db.USERS.Find(id);
             if (user == null)
             {
-                return HttpNotFound();
+                TempData["Message"] = "User not found.";
+                return RedirectToAction("ManageUsers", "Admin");
             }
+
+            // חישוב סטטיסטיקות
+            var userLibrary = db.UserLibrary.Where(ul => ul.User_ID == id).ToList();
+
+            ViewBag.TotalBooksPurchased = userLibrary.Count(ul => !ul.IsBorrowed);
+            ViewBag.TotalBooksBorrowed = userLibrary.Count(ul => ul.IsBorrowed);
+            ViewBag.TotalAmountSpent = userLibrary
+                .Where(ul => !ul.IsBorrowed)
+                .Sum(ul => decimal.TryParse(ul.Books.Price, out var price) ? price : 0);
+
             return View(user);
         }
+
+
         [HttpGet]
         public ActionResult ManageBooks(string query)
         {

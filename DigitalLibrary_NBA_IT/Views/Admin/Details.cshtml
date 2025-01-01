@@ -3,6 +3,12 @@
 <div class="container mt-5">
     <h2>User Details</h2>
 
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Message"]</div>
+    }
+
+
     <div class="card">
         <div class="card-header bg-dark text-white">
             User Information
@@ -11,7 +17,7 @@
             <p><strong>User ID:</strong> @Model.user_id</p>
             <p><strong>Name:</strong> @Model.name</p>
             <p><strong>Email:</strong> @Model.email</p>
-            <p><strong>Registration Date:</strong> @Model.registration_date?.ToString("yyyy-MM-dd")</p>
+            <p><strong>Registration Date:</strong> @(Model.registration_date.HasValue ? Model.registration_date.Value.ToString("yyyy-MM-dd") : "-")</p>
             <p><strong>Is Admin:</strong> @(Model.isAdmin ? "Yes" : "No")</p>
         </div>
     </div>
@@ -19,11 +25,12 @@
     <div class="mt-4">
         <h4>Statistics</h4>
         <ul>
-            <li>Total Books Purchased: <span id="booksPurchased">Loading...</span></li>
-            <li>Total Amount Spent: <span id="totalAmount">Loading...</span></li>
-            <li>Books Currently Borrowed: <span id="booksBorrowed">Loading...</span></li>
+            <li>Total Books Purchased: @ViewBag.TotalBooksPurchased</li>
+            <li>Total Books Borrowed: @ViewBag.TotalBooksBorrowed</li>
+            <li>Total Amount Spent: $@ViewBag.TotalAmountSpent</li>
         </ul>
     </div>
+
 
     <div class="mt-3">
         <a href="@Url.Action("ManageUsers", "Admin")" class="btn btn-secondary">Back to User Management</a>
