@@ -195,10 +195,92 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
         public ActionResult PaymentSuccess(string paymentId, string token, string PayerID)
         {
-            // טיפול בתשלום שהושלם
-            TempData["Message"] = "Payment successful!";
-            return RedirectToAction("Index", "Home");
+            try
+            {
+                var paypalService = new PayPalService();
+                var apiContext = paypalService.GetAPIContext();
+
+                // אישור תשלום
+                var paymentExecution = new PayPal.Api.PaymentExecution() { payer_id = PayerID };
+                var payment = new PayPal.Api.Payment() { id = paymentId };
+
+                var executedPayment = payment.Execute(apiContext, paymentExecution);
+
+                if (executedPayment.state.ToLower() == "approved")
+                {
+                    // טיפול ברכישה
+                    var cart = Session["Cart"] as List<CartItem> ?? new List<CartItem>();
+                    int userId = GetCurrentUserId();
+
+                    foreach (var item in cart)
+                    {
+                        // הוספה לטבלת UserLibrary
+                        var userLibraryEntry = new UserLibrary
+                        {
+                            User_ID = userId,
+                            Book_ID = item.Book.Book_ID,
+                            PurchaseDate = DateTime.Now,
+                            IsBorrowed = item.Type == "borrow",
+                            ExpiryDate = item.Type == "borrow" ? DateTime.Now.AddDays(30) : (DateTime?)null
+                        };
+
+                        db.UserLibrary.Add(userLibraryEntry);
+
+                        // עדכון כמות הספרים הזמינים
+                        var book = db.Books.FirstOrDefault(b => b.Book_ID == item.Book.Book_ID);
+                        if (book != null && int.TryParse(book.CopiesAvailable, out int copiesAvailable) && copiesAvailable > 0)
+                        {
+                            book.CopiesAvailable = (copiesAvailable - 1).ToString();
+                        }
+                    }
+
+                    db.SaveChanges();
+
+                    // שליחת מייל אישור למשתמש
+                    try
+                    {
+                        var emailService = new EmailService();
+                        var userEmail = GetUserEmail();
+                        string subject = "Purchase Confirmation Digital Library";
+
+                        // בניית גוף המייל
+                        string body = "<h3>Thank you for your purchase!</h3>";
+                        body += "<p>Here are the details of your transaction:</p>";
+                        body += "<ul>";
+                        foreach (var item in cart)
+                        {
+                            body += $"<li><strong>Book:</strong> {item.Book.Title} - {(item.Type == "borrow" ? "Borrowed" : "Purchased")}</li>";
+                        }
+                        body += "</ul>";
+                        body += $"<p><strong>Total Amount:</strong> ${executedPayment.transactions.FirstOrDefault()?.amount.total}</p>";
+                        body += $"<p><strong>Date:</strong> {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}</p>";
+
+                        emailService.SendEmail(userEmail, subject, body);
+                    }
+                    catch (Exception ex)
+                    {
+                        TempData["Message"] = "Payment successful, but failed to send confirmation email.";
+                    }
+
+                    // ניקוי עגלת הקניות
+                    ClearCart();
+
+                    TempData["Message"] = "Payment successful!";
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    TempData["Message"] = "Payment was not approved.";
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = "Payment failed: " + ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
         }
+
 
         public ActionResult PaymentCancelled()
         {
