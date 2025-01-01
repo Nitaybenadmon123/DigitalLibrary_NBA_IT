@@ -142,6 +142,38 @@
 <div class="container mt-5">
     <h1 class="text-center mb-4 welcome-text">Welcome to the Digital Library</h1>
 
+    <!-- שורת חיפוש -->
+    <div class="container mt-3 mb-4">
+        <form method="get" action="@Url.Action("Index", "Home")">
+            <div class="input-group search-bar">
+                <input type="text" name="query" class="form-control" placeholder="Search for a book by title, author, or publisher..." value="@ViewBag.Query" />
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                    <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#authorsModal">
+                        View Authors
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal להצגת המחברים -->
+    <div class="modal fade" id="authorsModal" tabindex="-1" aria-labelledby="authorsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authorsModalLabel">Authors</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="authorsList">
+                        <!-- רשימת המחברים תיטען כאן -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal לחלון בחירת אפשרות -->
     <div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="purchaseModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -221,46 +253,61 @@
 </div>
 
 <script>
-    // פונקציה לטיפול בהשאלה
+    document.addEventListener("DOMContentLoaded", function () {
+        const authorsList = document.getElementById("authorsList");
+
+        fetch('@Url.Action("GetAuthors", "Home")')
+            .then(response => response.json())
+            .then(authors => {
+                authorsList.innerHTML = authors.map(author => `
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${author.Name}</h5>
+                                <p class="card-text">${author.Bio}</p>
+                                <button class="btn btn-primary btn-sm" onclick="filterBooksByAuthor('${author.Name}')">View Books</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join("");
+            })
+            .catch(error => console.error("Error loading authors:", error));
+    });
+
+    function filterBooksByAuthor(authorName) {
+        window.location.href = `@Url.Action("Index", "Home")?authorName=${encodeURIComponent(authorName)}`;
+    }
+
     function handleBorrow(bookId) {
-        // קריאה לשרת לבדיקת התנאים
         fetch(`/Home/CheckBorrowConditions?id=${bookId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // אם כל הבדיקות הצליחו, הצג את החלונית
                     showPurchaseModal(bookId, 'borrow');
                 } else {
-                    // הצגת הודעת שגיאה במקרה של כישלון
                     alert(data.message);
                 }
             })
             .catch(error => console.error('Error:', error));
     }
 
-    // פונקציה להצגת החלונית
     function showPurchaseModal(bookId, actionType) {
         const modal = new bootstrap.Modal(document.getElementById('purchaseModal'));
         const buyNowButton = document.getElementById('buyNowButton');
         const addToCartButton = document.getElementById('addToCartButton');
 
-        // פעולה על לחצן "קנה עכשיו"
         buyNowButton.onclick = () => {
-            // אם המשתמש בחר השאלה
             if (actionType === 'borrow') {
                 window.location.href = `/Payment/Payment?bookId=${bookId}&type=borrow`;
             } else {
-                // אם המשתמש בחר קנייה
                 window.location.href = `/Payment/Payment?bookId=${bookId}&type=buy`;
             }
         };
 
-        // פעולה על לחצן "הוסף לעגלה"
         addToCartButton.onclick = () => {
             window.location.href = `/Home/AddToCart?id=${bookId}&type=${actionType}`;
         };
 
-        // הצגת החלונית
         modal.show();
     }
 </script>
