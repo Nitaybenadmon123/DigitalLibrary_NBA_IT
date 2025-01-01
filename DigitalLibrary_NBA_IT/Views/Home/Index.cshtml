@@ -137,23 +137,42 @@
         .btn-add-to-cart:hover {
             background-color: #138496;
         }
+
+    .search-bar {
+        flex: 1;
+    }
+
+    .form-select {
+        min-width: 150px;
+    }
+
+    .btn-secondary {
+        white-space: nowrap;
+    }
+
 </style>
 
 <div class="container mt-5">
     <h1 class="text-center mb-4 welcome-text">Welcome to the Digital Library</h1>
 
-    <!-- שורת חיפוש -->
+    <!-- שורת חיפוש ומיון -->
     <div class="container mt-3 mb-4">
-        <form method="get" action="@Url.Action("Index", "Home")">
+        <form method="get" action="@Url.Action("Index", "Home")" class="d-flex align-items-center">
             <div class="input-group search-bar">
                 <input type="text" name="query" class="form-control" placeholder="Search for a book by title, author, or publisher..." value="@ViewBag.Query" />
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit">Search</button>
-                    <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#authorsModal">
-                        View Authors
-                    </button>
-                </div>
+                <button class="btn btn-primary" type="submit">Search</button>
             </div>
+            <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#authorsModal">
+                View Authors
+            </button>
+            <select name="sortOption" class="form-select ms-2 w-auto" onchange="this.form.submit()">
+                <option value="" @(string.IsNullOrEmpty(ViewBag.SortOption) ? "selected" : "")>Sort By</option>
+                <option value="priceAsc" @(ViewBag.SortOption == "priceAsc" ? "selected" : "")>Price: Low to High</option>
+                <option value="priceDesc" @(ViewBag.SortOption == "priceDesc" ? "selected" : "")>Price: High to Low</option>
+                <option value="popular" @(ViewBag.SortOption == "popular" ? "selected" : "")>Most Popular</option>
+                <option value="year" @(ViewBag.SortOption == "year" ? "selected" : "")>Year Published</option>
+                <option value="discount" @(ViewBag.SortOption == "discount" ? "selected" : "")>Discounted</option>
+            </select>
         </form>
     </div>
 
@@ -189,7 +208,6 @@
             </div>
         </div>
     </div>
-
     <!-- תצוגת הספרים -->
     <div class="row">
         @if (Model.Any())
@@ -197,12 +215,8 @@
             foreach (var book in Model)
             {
                 decimal price = 0;
-                decimal parsedPrice;
+                decimal.TryParse(book.Price.Trim(), out price);
 
-                if (!string.IsNullOrEmpty(book.Price.Trim()) && decimal.TryParse(book.Price.Trim(), out parsedPrice))
-                {
-                    price = parsedPrice;
-                }
 
                 bool isPopular = price > 20;
 
@@ -237,7 +251,6 @@
                                     <button class="btn btn-secondary" onclick="handleBorrow('@book.Book_ID')">Borrow</button>
                                 }
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -251,6 +264,7 @@
         }
     </div>
 </div>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

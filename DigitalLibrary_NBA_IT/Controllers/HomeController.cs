@@ -38,27 +38,62 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
 
         // פעולה ראשית להצגת הספרים וחיפוש
-        public ActionResult Index(string query = "", string authorName = "")
+        public ActionResult Index(string query = "", string authorName = "", string sortOption = "")
         {
-            var books = db.Books.AsQueryable();
+            var booksQuery = db.Books.AsQueryable();
 
             // חיפוש לפי שם הספר או המו"ל
             if (!string.IsNullOrEmpty(query))
             {
-                books = books.Where(b => b.Title.Contains(query) || b.Publish.Contains(query));
+                booksQuery = booksQuery.Where(b => b.Title.Contains(query) || b.Publish.Contains(query));
             }
 
             // סינון לפי שם המחבר
             if (!string.IsNullOrEmpty(authorName))
             {
-                books = books.Where(b => db.Authors.Any(a => a.Name == authorName && a.Book_ID == b.Book_ID));
+                booksQuery = booksQuery.Where(b => db.Authors.Any(a => a.Name == authorName && a.Book_ID == b.Book_ID));
             }
 
-            ViewBag.Query = query; // שמירה על השאילתה בתיבת החיפוש
-            ViewBag.AuthorName = authorName; // שמירה על שם המחבר בתיבת החיפוש
+            // הבאת הנתונים למסגרת הזיכרון
+            var books = booksQuery.ToList();
 
-            return View(books.ToList());
+            // מיון הספרים לפי האפשרות שנבחרה
+            switch (sortOption)
+            {
+                case "priceAsc":
+                    books = books.OrderBy(b => ParseDecimal(b.Price)).ToList();
+                    break;
+                case "priceDesc":
+                    books = books.OrderByDescending(b => ParseDecimal(b.Price)).ToList();
+                    break;
+                case "popular":
+                    books = books.OrderByDescending(b => ParseDecimal(b.Price) > 20).ThenBy(b => b.Title).ToList();
+                    break;
+                case "year":
+                    books = books.OrderBy(b => b.Publish).ToList(); // הנחה ש-YearPublished הוא שדה במודל
+                    break;
+                case "discount":
+                    books = books.Where(b => ParseDecimal(b.Price) < 10).ToList();
+                    break;
+            }
+
+            // שמירה בתצוגה
+            ViewBag.Query = query;
+            ViewBag.AuthorName = authorName;
+            ViewBag.SortOption = sortOption;
+
+            return View(books);
         }
+
+        private decimal ParseDecimal(string priceString)
+        {
+            if (decimal.TryParse(priceString?.Trim(), out var price))
+            {
+                return price;
+            }
+            return decimal.MaxValue; // ערך גבוה אם המחיר לא תקין
+        }
+
 
 
         public ActionResult About()
