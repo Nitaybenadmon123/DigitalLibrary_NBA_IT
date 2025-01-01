@@ -93,6 +93,51 @@ namespace DigitalLibrary_NBA_IT.Controllers
             // חזרה לעמוד העגלה
             return RedirectToAction("Cart");
         }
+        private int GetCurrentUserID()
+        {
+            // לדוגמה: אם מזהה המשתמש נשמר ב-Session
+            return int.Parse(Session["UserId"].ToString());
+        }
+        [HttpGet]
+        public JsonResult CheckBorrowConditions(string id)
+        {
+            var userId = GetCurrentUserID();
+            var book = db.Books.Find(id);
+
+            if (book == null)
+            {
+                return Json(new { success = false, message = "Book not found." }, JsonRequestBehavior.AllowGet);
+            }
+
+            var cart = Session["Cart"] as List<CartItem> ?? new List<CartItem>();
+
+            // ספרים מושאלים בעגלה
+            int borrowedBooksInCart = cart.Count(item => item.Type == "borrow");
+
+            // ספרים מושאלים בפועל
+            int currentBorrowedBooksCount = db.UserLibrary.Count(ul => ul.User_ID == userId && ul.IsBorrowed);
+
+            // השאלה של אותו ספר 3 פעמים
+            int bookBorrowedCount = db.UserLibrary.Count(ul => ul.Book_ID == id && ul.User_ID == userId && ul.IsBorrowed);
+
+            if (borrowedBooksInCart >= 3)
+            {
+                return Json(new { success = false, message = "You cannot add more than 3 borrowed books to your cart." }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (currentBorrowedBooksCount + borrowedBooksInCart >= 3)
+            {
+                return Json(new { success = false, message = "You cannot borrow more than 3 books at the same time." }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (bookBorrowedCount >= 3)
+            {
+                return Json(new { success = false, message = $"The book '{book.Title}' has already been borrowed 3 times by you." }, JsonRequestBehavior.AllowGet);
+            }
+
+            // כל התנאים התקיימו
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        }
 
 
         // פעולה להוספת ספר לעגלה
@@ -108,7 +153,38 @@ namespace DigitalLibrary_NBA_IT.Controllers
             // קבלת רשימת העגלה מה-Session
             var cart = Session["Cart"] as List<CartItem> ?? new List<CartItem>();
 
-            // הוספת הספר לעגלה עם סוג הפעולה (קנייה או השאלה)
+            // זיהוי משתמש נוכחי
+            var userId = GetCurrentUserID();
+
+            // בדיקה אם יש כבר 3 ספרים מושאלים בעגלה
+            int borrowedBooksInCart = cart.Count(item => item.Type == "borrow");
+            if (borrowedBooksInCart >= 3 && type == "borrow")
+            {
+                TempData["Message"] = "You cannot add more than 3 borrowed books to your cart.";
+                return RedirectToAction("Index");
+            }
+
+            // בדיקה אם המשתמש כבר השאיל 3 ספרים
+            int currentBorrowedBooksCount = db.UserLibrary
+                .Count(ul => ul.User_ID == userId && ul.IsBorrowed);
+
+            if (currentBorrowedBooksCount + borrowedBooksInCart >= 3 && type == "borrow")
+            {
+                TempData["Message"] = "You cannot borrow more than 3 books at the same time.";
+                return RedirectToAction("Index");
+            }
+
+            // בדיקה אם הספר הזה כבר הושאל 3 פעמים
+            int bookBorrowedCount = db.UserLibrary
+                .Count(ul => ul.Book_ID == id && ul.User_ID == userId && ul.IsBorrowed);
+
+            if (bookBorrowedCount >= 3 && type == "borrow")
+            {
+                TempData["Message"] = $"The book '{book.Title}' has already been borrowed 3 times by you.";
+                return RedirectToAction("Index");
+            }
+
+            // הוספת הספר לעגלה
             cart.Add(new CartItem
             {
                 Book = book,
@@ -121,11 +197,10 @@ namespace DigitalLibrary_NBA_IT.Controllers
             // עדכון ספירת הפריטים בעגלה
             Session["CartCount"] = cart.Count;
 
-            // הודעת הצלחה
             TempData["Message"] = $"{book.Title} has been added to your cart as a {(type == "borrow" ? "Borrowed" : "Purchased")} item.";
-
             return RedirectToAction("Index");
         }
+
         public ActionResult Cart()
         {
             var cart = Session["Cart"] as List<CartItem> ?? new List<CartItem>();
