@@ -209,7 +209,7 @@
                         </div>
                     </div>
                 </div>
-            } 
+            }
         }
         else
         {
@@ -246,16 +246,23 @@
 
         // פעולה על לחצן "קנה עכשיו"
         buyNowButton.onclick = () => {
-            window.location.href = '@Url.Action("Payment", "Payment")';
+            // אם המשתמש בחר השאלה
+            if (actionType === 'borrow') {
+                window.location.href = `/Payment/Payment?bookId=${bookId}&type=borrow`;
+            } else {
+                // אם המשתמש בחר קנייה
+                window.location.href = `/Payment/Payment?bookId=${bookId}&type=buy`;
+            }
         };
 
         // פעולה על לחצן "הוסף לעגלה"
         addToCartButton.onclick = () => {
-            window.location.href = `@Url.Action("AddToCart", "Home")?id=${bookId}&type=${actionType}`;
+            window.location.href = `/Home/AddToCart?id=${bookId}&type=${actionType}`;
         };
 
         // הצגת החלונית
         modal.show();
     }
 </script>
+
 

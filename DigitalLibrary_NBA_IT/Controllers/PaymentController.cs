@@ -12,12 +12,35 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
         // עמוד תשלום
         [HttpGet]
-        public ActionResult Payment()
+        public ActionResult Payment(string bookId = null, string type = null)
         {
-            var totalAmount = CalculateTotalAmount();
+            decimal totalAmount = 0;
+
+            if (!string.IsNullOrEmpty(bookId))
+            {
+                // משתמש הגיע ישירות מדף הבית עם מוצר ספציפי
+                var book = db.Books.Find(bookId);
+                if (book != null)
+                {
+                    var priceString = book.Price.Trim();
+                    if (!string.IsNullOrEmpty(priceString) && decimal.TryParse(priceString, out decimal parsedPrice))
+                    {
+                        // אם מדובר בהשאלה, המחיר הוא price/4
+                        totalAmount = (type == "borrow") ? parsedPrice / 4 : parsedPrice;
+                    }
+                }
+            }
+            else
+            {
+                // משתמש הגיע מהעגלה
+                totalAmount = CalculateTotalAmount(); // סכום כולל מהעגלה
+            }
+
             TempData["TotalAmount"] = totalAmount; // העברת סכום כולל ל-TempData
             return View();
         }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -166,6 +189,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 return price;
             });
         }
+
 
         private string GetUserEmail()
         {
