@@ -15,10 +15,11 @@ namespace DigitalLibrary_NBA_IT.Controllers
         public ActionResult Payment(string bookId = null, string type = null)
         {
             decimal totalAmount = 0;
+            List<CartItem> cart = new List<CartItem>();
 
             if (!string.IsNullOrEmpty(bookId))
             {
-                // משתמש הגיע ישירות מדף הבית עם מוצר ספציפי
+                // משתמש הגיע ישירות מ"Buy Now"
                 var book = db.Books.Find(bookId);
                 if (book != null)
                 {
@@ -27,18 +28,29 @@ namespace DigitalLibrary_NBA_IT.Controllers
                     {
                         // אם מדובר בהשאלה, המחיר הוא price/4
                         totalAmount = (type == "borrow") ? parsedPrice / 4 : parsedPrice;
+
+                        // הוספת הספר לעגלת קניות זמנית
+                        cart.Add(new CartItem
+                        {
+                            Book = book,
+                            Type = type
+                        });
+
+                        Session["Cart"] = cart; // שמירת העגלה ב-Session
                     }
                 }
             }
             else
             {
                 // משתמש הגיע מהעגלה
+                cart = Session["Cart"] as List<CartItem> ?? new List<CartItem>();
                 totalAmount = CalculateTotalAmount(); // סכום כולל מהעגלה
             }
 
             TempData["TotalAmount"] = totalAmount; // העברת סכום כולל ל-TempData
             return View();
         }
+
 
 
 
@@ -163,7 +175,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
         private int GetCurrentUserId()
         {
             // לדוגמה: אם מזהה המשתמש נשמר ב-Session
-            return int.Parse(Session["UserId"].ToString());
+            return int.Parse(Session["UserID"].ToString());
         }
 
 
