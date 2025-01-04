@@ -153,7 +153,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
             int currentBorrowedBooksCount = db.UserLibrary.Count(ul => ul.User_ID == userId && ul.IsBorrowed);
 
             // השאלה של אותו ספר 3 פעמים
-            int bookBorrowedCount = db.UserLibrary.Count(ul => ul.Book_ID == id && ul.User_ID == userId && ul.IsBorrowed);
+            int bookBorrowedCount = db.UserLibrary.Count(ul => ul.Book_ID == id && ul.IsBorrowed);
 
             if (borrowedBooksInCart >= 3)
             {
@@ -167,7 +167,17 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             if (bookBorrowedCount >= 3)
             {
-                return Json(new { success = false, message = $"The book '{book.Title}' has already been borrowed 3 times by you." }, JsonRequestBehavior.AllowGet);
+                var waitlistEntry = new WAITLIST
+                {
+                    Book_ID = id, // מזהה הספר
+                    User_ID = userId, // מזהה המשתמש
+                    DateAdded = DateTime.Now // תאריך נוכחי
+                };
+
+                db.WAITLIST.Add(waitlistEntry);
+                db.SaveChanges(); // שמירת השינויים למסד הנתונים
+
+                return Json(new { success = false, message = $"The book '{book.Title}' has already been borrowed 3 times. You have been added to the waitlist." }, JsonRequestBehavior.AllowGet);
             }
 
             // כל התנאים התקיימו
@@ -242,56 +252,51 @@ namespace DigitalLibrary_NBA_IT.Controllers
             return View(cart);
         }
 
-        //public ActionResult Cart()
-        //{
-        //    // בדיקה אם Session["Cart"] קיים, ואם לא, מחזיר רשימה ריקה
-        //    var cart = Session["Cart"] as List<DigitalLibrary_NBA_IT.Models.Books> ?? new List<DigitalLibrary_NBA_IT.Models.Books>();
-        //    return View(cart);
-        //}
+      
 
         // פעולה להשאלת ספר (כבר קיימת אך לא נדרשת כעת לשימוש)
-        public ActionResult Borrow(string id)
-        {
-            var book = db.Books.Find(id);
+        //public ActionResult Borrow(string id)
+        //{
+        //    var book = db.Books.Find(id);
 
-            if (book != null)
-            {
-                int availableCopies = int.Parse(book.CopiesAvailable);
+        //    if (book != null)
+        //    {
+        //        int availableCopies = int.Parse(book.CopiesAvailable);
 
-                if (availableCopies > 0)
-                {
-                    // הפחתת מספר העותקים הזמינים
-                    book.CopiesAvailable = (availableCopies - 1).ToString();
-                    db.SaveChanges();
+        //        if (availableCopies > 0)
+        //        {
+        //            // הפחתת מספר העותקים הזמינים
+        //            book.CopiesAvailable = (availableCopies - 1).ToString();
+        //            db.SaveChanges();
 
-                    TempData["Message"] = "Book borrowed successfully! Return it within 30 days.";
-                }
-                else
-                {
-                    TempData["Message"] = "No copies available. You've been added to the waitlist.";
-                    AddToWaitlist(id);
-                }
-            }
-            else
-            {
-                TempData["Message"] = "Book not found.";
-            }
+        //            TempData["Message"] = "Book borrowed successfully! Return it within 30 days.";
+        //        }
+        //        else
+        //        {
+        //            TempData["Message"] = "No copies available. You've been added to the waitlist.";
+        //            AddToWaitlist(id);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        TempData["Message"] = "Book not found.";
+        //    }
 
-            return RedirectToAction("Index");
-        }
+        //    return RedirectToAction("Index");
+        //}
 
-        // הוספת משתמש לרשימת ההמתנה
-        private void AddToWaitlist(string bookId)
-        {
-            var waitlist = new WAITLIST
-            {
-                Book_ID = bookId,
-                DateAdded = DateTime.Now
-            };
+        //// הוספת משתמש לרשימת ההמתנה
+        //private void AddToWaitlist(string bookId)
+        //{
+        //    var waitlist = new WAITLIST
+        //    {
+        //        Book_ID = bookId,
+        //        DateAdded = DateTime.Now
+        //    };
 
-            db.WAITLIST.Add(waitlist);
-            db.SaveChanges();
-        }
+        //    db.WAITLIST.Add(waitlist);
+        //    db.SaveChanges();
+        //}
 
         // זיהוי משתמש נוכחי
         private string GetCurrentUserId()
@@ -299,24 +304,6 @@ namespace DigitalLibrary_NBA_IT.Controllers
             return HttpContext.User.Identity.Name ?? "guest";
         }
 
-        // פעולה לניהול רשימת המתנה
-        public ActionResult NotifyWaitlist(string bookId)
-        {
-            var waitlistEntries = db.WAITLIST
-                                    .Where(w => w.Book_ID == bookId)
-                                    .OrderBy(w => w.DateAdded)
-                                    .ToList();
-
-            if (waitlistEntries.Any())
-            {
-                var firstInLine = waitlistEntries.First();
-                db.WAITLIST.Remove(firstInLine);
-                db.SaveChanges();
-
-                TempData["Message"] = $"The book is now available for {firstInLine.User_ID}.";
-            }
-
-            return RedirectToAction("Index");
-        }
+        
     }
 }
