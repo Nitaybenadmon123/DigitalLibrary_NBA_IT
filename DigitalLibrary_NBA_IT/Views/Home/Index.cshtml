@@ -209,7 +209,7 @@
             <div class="price-filter-container">
                 <input type="number" step="0.5" name="minPrice" placeholder="Min" value="@ViewBag.MinPrice" />
                 <input type="number" step="0.5" name="maxPrice" placeholder="Max" value="@ViewBag.MaxPrice" />
-                <button type="submit">Filter</button>
+                <button type="submit">:Filter by price</button>
             </div>
 
         </form>
@@ -263,6 +263,21 @@
             </div>
         </div>
     </div>
+    <!--     הצגת פרטי הספר    -->
+    <div class="modal fade" id="bookDetailsModal" tabindex="-1" aria-labelledby="bookDetailsLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookDetailsLabel">Book Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="bookDetailsContent">
+                    <!-- התוכן ייטען כאן -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- תצוגת הספרים -->
     <div class="row">
         @if (Model.Any())
@@ -300,6 +315,9 @@
                             <p class="card-text">Copies Available: @book.CopiesAvailable</p>
 
                             <div class="button-container">
+                                <button class="btn btn-success" onclick="openBookDetails('@book.Book_ID')">Book page</button>
+
+
                                 <button class="btn btn-primary" onclick="showPurchaseModal('@book.Book_ID', 'buy')">Buy</button>
                                 @if (!isPopular)
                                 {
@@ -403,6 +421,90 @@ function filterBooksByGenre(genreName) {
 
         modal.show();
     }
+
+    function openBookDetails(bookId) {
+        if (!bookId) {
+            alert("Invalid Book ID");
+            return;
+        }
+
+        fetch(`/Home/GetBookDetails?id=${bookId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert(data.message);
+                    return;
+                }
+
+                const content = `
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="${data.data.Book.ImageUrl || 'https://via.placeholder.com/300x400'}" class="img-fluid" alt="${data.data.Book.Title}">
+                    </div>
+                    <div class="col-md-8">
+                        <h4>${data.data.Book.Title}</h4>
+                        <p><strong>Publisher:</strong> ${data.data.Book.Publish}</p>
+                        <p><strong>Price:</strong> $${data.data.Book.Price}</p>
+                        <p><strong>Copies Available:</strong> ${data.data.Book.CopiesAvailable}</p>
+                    </div>
+                </div>
+                <hr>
+                
+                <hr>
+                <h5>Authors:</h5>
+                <ul>
+                    ${data.data.Authors.map(author => `<li>${author.Name} - ${author.Bio}</li>`).join('')}
+                </ul>
+                <hr>
+                <h5>Genres:</h5>
+                <ul>
+                    ${data.data.Genres.map(genre => `<li>${genre}</li>`).join('')}
+                </ul>
+                <hr>
+                <h5>Waitlist:</h5>
+                <p>${data.data.WaitlistCount} user(s) waiting for this book</p>
+                <ul>
+                    ${data.data.Waitlist.map(w => `<li>User ID: ${w.User_ID}, Date Added: ${new Date(w.DateAdded).toLocaleDateString()}</li>`).join('')}
+                </ul>
+                <hr>
+                <h5>Reviews:</h5>
+                <ul>
+                    ${data.data.Reviews.length > 0
+                        ? data.data.Reviews.map(review => `
+                            <li>
+                                <strong>User ID: ${review.User_ID}</strong> rated ${review.Rating}/5 on ${new Date(review.ReviewDate).toLocaleDateString()}
+                                <p>${review.Feedback}</p>
+                            </li>
+                        `).join('')
+                        : `<li>No reviews available for this book.</li>`}
+                </ul>
+                <div class="text-center">
+                    <button class="btn btn-primary" onclick="shareOnFacebook('${data.data.Book.Title}', '${window.location.href}')">Share on Facebook</button>
+                    <button class="btn btn-primary" onclick="shareOnTwitter('${data.data.Book.Title}', '${window.location.href}')">Share on Twitter</button>
+                </div>
+
+            `;
+                document.getElementById('bookDetailsContent').innerHTML = content;
+                const modal = new bootstrap.Modal(document.getElementById('bookDetailsModal'));
+                modal.show();
+            })
+            .catch(error => {
+                console.error("Error fetching book details:", error);
+                alert("An error occurred while fetching book details.");
+            });
+    }
+    function shareOnFacebook(title, url) {
+        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(`Check out this book: ${title}`)}`;
+        window.open(fbUrl, '_blank');
+    }
+
+    function shareOnTwitter(title, url) {
+        const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(`Check out this book: ${title}`)}`;
+        window.open(twitterUrl, '_blank');
+    }
+
+
+
 </script>
 
 

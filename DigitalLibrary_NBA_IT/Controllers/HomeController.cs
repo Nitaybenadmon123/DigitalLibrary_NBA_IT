@@ -8,6 +8,72 @@ namespace DigitalLibrary_NBA_IT.Controllers
 {
     public class HomeController : Controller
     {
+        public JsonResult GetBookDetails(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return Json(new { success = false, message = "Book ID is missing." }, JsonRequestBehavior.AllowGet);
+            }
+
+            var book = db.Books.Find(id);
+            if (book == null)
+            {
+                return Json(new { success = false, message = "Book not found." }, JsonRequestBehavior.AllowGet);
+            }
+
+            // מחברים
+            var authors = db.Authors
+                .Where(a => a.Book_ID == book.Book_ID)
+                .Select(a => new { a.Name, a.Bio })
+                .ToList();
+
+            // ז'אנרים
+            var genres = db.Genres
+                .Where(g => g.Book_ID == book.Book_ID)
+                .Select(g => g.Name)
+                .ToList();
+
+            // רשימת המתנה
+            var waitlist = db.WAITLIST
+                .Where(w => w.Book_ID == book.Book_ID)
+                .Select(w => new { w.User_ID, w.DateAdded })
+                .ToList();
+
+            // חוות דעת (אם אין, מחזיר רשימה ריקה)
+            var reviews = db.Reviews
+                .Where(r => r.Book_ID == book.Book_ID)
+                .Select(r => new
+                {
+                    r.User_ID,
+                    r.Rating,
+                    r.Feedback,
+                    r.ReviewDate
+                })
+                .ToList();
+
+            var viewModel = new
+            {
+                Book = new
+                {
+                    book.Book_ID,
+                    book.Title,
+                    book.Publish,
+                    book.Price,
+                    book.CopiesAvailable,
+                    book.ImageUrl
+                },
+                Authors = authors,
+                Genres = genres,
+                Waitlist = waitlist,
+                WaitlistCount = waitlist.Count,
+                Reviews = reviews // רשימה ריקה אם אין ביקורות
+            };
+
+            return Json(new { success = true, data = viewModel }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
         // חיבור למסד הנתונים
         private Digital_library_DBEntities db = new Digital_library_DBEntities();
         public JsonResult GetGenres()
