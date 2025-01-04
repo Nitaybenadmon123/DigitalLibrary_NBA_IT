@@ -10,6 +10,28 @@ namespace DigitalLibrary_NBA_IT.Controllers
     {
         // חיבור למסד הנתונים
         private Digital_library_DBEntities db = new Digital_library_DBEntities();
+        public JsonResult GetGenres()
+        {
+            var genres = db.Genres
+                .GroupBy(g => new { g.Name })
+                .Select(g => new
+                {
+                    Name = g.Key.Name
+                }).ToList();
+
+            return Json(genres, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetBooksByGenre(string genreName)
+        {
+            var books = db.Genres
+                .Where(g => g.Name == genreName) // מסנן לפי שם הז'אנר
+                .Select(g => db.Books.FirstOrDefault(b => b.Book_ID == g.Book_ID)) // מבטיח התאמה לספרים
+                .Distinct()
+                .ToList();
+
+            return Json(books, JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetAuthors()
         {
             var authors = db.Authors
@@ -38,7 +60,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
 
         // פעולה ראשית להצגת הספרים וחיפוש
-        public ActionResult Index(string query = "", string authorName = "", string sortOption = "", decimal minPrice = 5, decimal maxPrice = 50)
+        public ActionResult Index(string query = "", string authorName = "", string sortOption = "", string genreName = "", decimal minPrice = 5, decimal maxPrice = 50)
         {
             var booksQuery = db.Books.AsQueryable();
 
@@ -53,7 +75,11 @@ namespace DigitalLibrary_NBA_IT.Controllers
             {
                 booksQuery = booksQuery.Where(b => db.Authors.Any(a => a.Name == authorName && a.Book_ID == b.Book_ID));
             }
-
+            // סינון לפי ז'אנר
+            if (!string.IsNullOrEmpty(genreName))
+            {
+                booksQuery = booksQuery.Where(b => db.Genres.Any(g => g.Name == genreName && g.Book_ID == b.Book_ID));
+            }
             // שליפת כל הנתונים לזיכרון לסינון לפי מחיר
             var booksList = booksQuery.ToList();
 
@@ -95,6 +121,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             // שמירה בתצוגה
             ViewBag.Query = query;
+            ViewBag.GenreName = genreName;
             ViewBag.AuthorName = authorName;
             ViewBag.SortOption = sortOption;
             ViewBag.MinPrice = minPrice;

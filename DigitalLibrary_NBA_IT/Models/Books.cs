@@ -19,6 +19,7 @@ namespace DigitalLibrary_NBA_IT.Models
         {
             this.Authors = new HashSet<Authors>();
             this.CART = new HashSet<CART>();
+            this.Genres = new HashSet<Genres>();
             this.Reviews = new HashSet<Reviews>();
             this.UserLibrary = new HashSet<UserLibrary>();
             this.WAITLIST = new HashSet<WAITLIST>();
@@ -36,6 +37,8 @@ namespace DigitalLibrary_NBA_IT.Models
         public virtual ICollection<Authors> Authors { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CART> CART { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Genres> Genres { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Reviews> Reviews { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

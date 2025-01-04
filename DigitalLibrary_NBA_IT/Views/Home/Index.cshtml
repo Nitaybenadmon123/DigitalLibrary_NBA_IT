@@ -190,6 +190,10 @@
                 <input type="text" name="query" class="form-control" placeholder="Search for a book by title, author, or publisher..." value="@ViewBag.Query" />
                 <button class="btn btn-primary" type="submit">Search</button>
             </div>
+            <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#genresModal">
+                View Genres
+            </button>
+
             <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#authorsModal">
                 View Authors
             </button>
@@ -209,6 +213,22 @@
             </div>
 
         </form>
+    </div>
+    <!-- Modal להצגת הז'אנרים -->
+    <div class="modal fade" id="genresModal" tabindex="-1" aria-labelledby="genresModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="genresModalLabel">Genres</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="genresList">
+                        <!-- רשימת הז'אנרים תיטען כאן -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal להצגת המחברים -->
@@ -302,6 +322,30 @@
 
 
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const genresList = document.getElementById("genresList");
+
+    fetch('@Url.Action("GetGenres", "Home")')
+        .then(response => response.json())
+        .then(genres => {
+            genresList.innerHTML = genres.map(genre => `
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">${genre.Name}</h5>
+                            <button class="btn btn-primary btn-sm" onclick="filterBooksByGenre('${genre.Name}')">View Books</button>
+                        </div>
+                    </div>
+                </div>
+            `).join("");
+        })
+        .catch(error => console.error("Error loading genres:", error));
+});
+
+function filterBooksByGenre(genreName) {
+    window.location.href = `@Url.Action("Index", "Home")?genreName=${encodeURIComponent(genreName)}`;
+}
+
     document.addEventListener("DOMContentLoaded", function () {
         const authorsList = document.getElementById("authorsList");
 
