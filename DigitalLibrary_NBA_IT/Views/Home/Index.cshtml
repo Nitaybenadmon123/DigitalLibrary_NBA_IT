@@ -149,6 +149,34 @@
     .btn-secondary {
         white-space: nowrap;
     }
+    .price-filter-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .price-filter-container input[type="number"] {
+            width: 60px;
+            text-align: center;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .price-filter-container button {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+            .price-filter-container button:hover {
+                background-color: #218838;
+            }
 
 </style>
 
@@ -173,6 +201,13 @@
                 <option value="year" @(ViewBag.SortOption == "year" ? "selected" : "")>Year Published</option>
                 <option value="discount" @(ViewBag.SortOption == "discount" ? "selected" : "")>Discounted</option>
             </select>
+            <!-- סינון לפי מחיר -->
+            <div class="price-filter-container">
+                <input type="number" step="0.5" name="minPrice" placeholder="Min" value="@ViewBag.MinPrice" />
+                <input type="number" step="0.5" name="maxPrice" placeholder="Max" value="@ViewBag.MaxPrice" />
+                <button type="submit">Filter</button>
+            </div>
+
         </form>
     </div>
 

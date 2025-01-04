@@ -38,7 +38,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
 
         // פעולה ראשית להצגת הספרים וחיפוש
-        public ActionResult Index(string query = "", string authorName = "", string sortOption = "")
+        public ActionResult Index(string query = "", string authorName = "", string sortOption = "", decimal minPrice = 5, decimal maxPrice = 50)
         {
             var booksQuery = db.Books.AsQueryable();
 
@@ -53,6 +53,22 @@ namespace DigitalLibrary_NBA_IT.Controllers
             {
                 booksQuery = booksQuery.Where(b => db.Authors.Any(a => a.Name == authorName && a.Book_ID == b.Book_ID));
             }
+
+            // שליפת כל הנתונים לזיכרון לסינון לפי מחיר
+            var booksList = booksQuery.ToList();
+
+            booksList = booksList.Where(b =>
+            {
+                decimal price;
+                if (decimal.TryParse(b.Price, out price))
+                {
+                    return price >= minPrice && price <= maxPrice;
+                }
+                return false;
+            }).ToList();
+
+            // המרה חזרה ל-IQueryable להמשך עיבוד
+            booksQuery = booksList.AsQueryable();
 
             // הבאת הנתונים למסגרת הזיכרון
             var books = booksQuery.ToList();
@@ -81,6 +97,9 @@ namespace DigitalLibrary_NBA_IT.Controllers
             ViewBag.Query = query;
             ViewBag.AuthorName = authorName;
             ViewBag.SortOption = sortOption;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+
 
             return View(books);
         }
