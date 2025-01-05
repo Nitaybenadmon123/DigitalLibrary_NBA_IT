@@ -416,6 +416,76 @@ namespace DigitalLibrary_NBA_IT.Controllers
             return HttpContext.User.Identity.Name ?? "guest";
         }
 
-        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangeCartItemType(string bookId, string newType)
+        {
+            if (string.IsNullOrEmpty(bookId) || string.IsNullOrEmpty(newType))
+            {
+                TempData["Message"] = "Invalid request.";
+                return RedirectToAction("Cart");
+            }
+
+            var cart = Session["Cart"] as List<CartItem> ?? new List<CartItem>();
+            var userId = GetCurrentUserID();
+
+            // מציאת הפריט בעגלה
+            var item = cart.FirstOrDefault(c => c.Book.Book_ID == bookId);
+            if (item != null)
+            {
+                if (newType.ToLower() == "borrow")
+                {
+                    // בדיקת התנאים להשאלה
+                    int borrowedBooksInCart = cart.Count(c => c.Type == "borrow" && c.Book.Book_ID != bookId);
+                    int currentBorrowedBooksCount = db.UserLibrary.Count(ul => ul.User_ID == userId && ul.IsBorrowed);
+                    int totalBorrowedBooks = borrowedBooksInCart + currentBorrowedBooksCount;
+
+                    // בדיקה אם המשתמש כבר הגיע למגבלת ההשאלה
+                    if (totalBorrowedBooks >= 3)
+                    {
+                        TempData["Message"] = "You cannot borrow more than 3 books at the same time.";
+                        return RedirectToAction("Cart");
+                    }
+
+                    // בדיקה אם הספר הזה כבר הושאל 3 פעמים
+                    int bookBorrowedCount = db.UserLibrary.Count(ul => ul.Book_ID == bookId && ul.IsBorrowed);
+                    if (bookBorrowedCount >= 3)
+                    {
+                        // הוספת המשתמש לרשימת ההמתנה
+                        var waitlistEntry = new WAITLIST
+                        {
+                            Book_ID = bookId,
+                            User_ID = userId,
+                            DateAdded = DateTime.Now
+                        };
+                        db.WAITLIST.Add(waitlistEntry);
+                        db.SaveChanges(); // שמירת השינויים במסד הנתונים
+
+                        TempData["Message"] = "This book is already borrowed by 3 users. You have been added to the waitlist.";
+                        return RedirectToAction("Cart");
+                    }
+
+                    // עדכון הסוג להשאלה
+                    item.Type = "borrow";
+                }
+                else
+                {
+                    // עדכון הסוג לקנייה
+                    item.Type = "buy";
+                }
+            }
+
+            // שמירת העדכונים בעגלה
+            Session["Cart"] = cart;
+
+            TempData["Message"] = "Cart item updated successfully.";
+            return RedirectToAction("Cart");
+        }
+
+
+
+
+
+
     }
 }

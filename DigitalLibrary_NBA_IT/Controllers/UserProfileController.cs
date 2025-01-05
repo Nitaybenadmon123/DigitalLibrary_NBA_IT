@@ -95,18 +95,48 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             if (user != null)
             {
-                db.USERS.Remove(user); // מחיקת המשתמש ממסד הנתונים
-                db.SaveChanges();
+                try
+                {
 
-                Session.Clear(); // נקה את הסשן
-                TempData["Message"] = "Your account has been deleted successfully.";
-                TempData["MessageType"] = "success";
-                return RedirectToAction("Register", "User"); // הפניה לעמוד ההרשמה
+                    
+
+                    // 2. מחיקת רשומות מהספרייה האישית למעט ספרים שנרכשו
+                    var userLibraryItems = db.UserLibrary.Where(ul => ul.User_ID == userId && ul.IsBorrowed).ToList();
+                    db.UserLibrary.RemoveRange(userLibraryItems);
+
+                    // 3. מחיקת רשומות מרשימת ההמתנה
+                    var waitlistItems = db.WAITLIST.Where(w => w.User_ID == userId).ToList();
+                    db.WAITLIST.RemoveRange(waitlistItems);
+
+                    // 4. מחיקת ביקורות שנכתבו על ידי המשתמש
+                    var reviews = db.Reviews.Where(r => r.User_ID == userId).ToList();
+                    db.Reviews.RemoveRange(reviews);
+
+                    // מחיקת המשתמש
+                    db.USERS.Remove(user);
+
+                    // שמירת השינויים
+                    db.SaveChanges();
+
+                    // נקה את הסשן
+                    Session.Clear();
+
+                    TempData["Message"] = "Your account and related data have been deleted successfully.";
+                    TempData["MessageType"] = "success";
+                    return RedirectToAction("Register", "User");
+                }
+                catch (Exception ex)
+                {
+                    TempData["Message"] = $"An error occurred while deleting your account: {ex.Message}";
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("Profile");
+                }
             }
 
             TempData["Message"] = "Failed to delete account. Please try again.";
             TempData["MessageType"] = "error";
             return RedirectToAction("Profile");
         }
+
     }
 }

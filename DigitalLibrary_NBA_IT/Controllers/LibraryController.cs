@@ -47,24 +47,41 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (string.IsNullOrWhiteSpace(bookId))
+            {
+                TempData["Error"] = "Book ID is missing.";
+                return RedirectToAction("PersonalLibrary");
+            }
+
             int userId = Convert.ToInt32(Session["UserId"]);
 
+            // מציאת הספר להסרה
             var bookToRemove = db.UserLibrary
-                .FirstOrDefault(ul => ul.Book_ID == bookId && ul.User_ID == userId && !ul.IsBorrowed);
+                .FirstOrDefault(ul => ul.Book_ID.Trim() == bookId.Trim() && ul.User_ID == userId && !ul.IsBorrowed);
 
-            if (bookToRemove != null)
+            if (bookToRemove == null)
             {
+                // הספר אינו ספר שנרכש
+                TempData["Error"] = "The book cannot be removed or does not exist in your purchased library.";
+                return RedirectToAction("PersonalLibrary");
+            }
+
+            try
+            {
+                // הסרת הספר
                 db.UserLibrary.Remove(bookToRemove);
                 db.SaveChanges();
                 TempData["Message"] = "Book successfully removed from your library.";
             }
-            else
+            catch (Exception ex)
             {
-                TempData["Error"] = "Failed to remove the book.";
+                // טיפול בשגיאה בזמן מחיקה
+                TempData["Error"] = $"An error occurred while trying to remove the book: {ex.Message}";
             }
 
             return RedirectToAction("PersonalLibrary");
         }
+
 
         [HttpGet]
         public ActionResult AddReview(string id)
