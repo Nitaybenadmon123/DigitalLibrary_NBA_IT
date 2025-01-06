@@ -143,8 +143,9 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 string resetCode = new Random().Next(100000, 999999).ToString();
 
                 // שמירת הקוד ב-Session או TempData
-                TempData["ResetCode"] = resetCode;
-                TempData["Email"] = email;
+                Session["ResetCode"] = resetCode; // שמור את הקוד
+                Session["Email"] = email; // שמור את כתובת המייל
+
 
                 // שליחת המייל עם הקוד
                 var emailService = new EmailService();
@@ -168,18 +169,19 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult VerifyCode(string code)
         {
-            string storedCode = TempData["ResetCode"] as string;
-            string email = TempData["Email"] as string;
+            string storedCode = Session["ResetCode"] as string;
+            string email = Session["Email"] as string;
 
             if (storedCode == code)
             {
-                TempData["Email"] = email; // שמירה לשלב הבא
+                Session["Email"] = email; // שמירה לשלב הבא
                 return RedirectToAction("ResetPassword");
             }
 
             TempData["Error"] = "Invalid reset code. Please try again.";
             return View();
         }
+
 
         [HttpGet]
         public ActionResult ResetPassword()
@@ -192,7 +194,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
         public ActionResult ResetPassword(string newPassword)
         {
-            string email = TempData["Email"] as string;
+            string email = Session["Email"] as string;
 
             if (!string.IsNullOrEmpty(email))
             {
@@ -211,6 +213,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
                     db.SaveChanges();
 
                     TempData["Message"] = "Your password has been reset successfully.";
+                    Session.Remove("ResetCode");
                     return RedirectToAction("Login");
                 }
             }

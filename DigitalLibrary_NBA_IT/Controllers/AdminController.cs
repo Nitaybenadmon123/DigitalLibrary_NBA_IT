@@ -113,7 +113,13 @@ namespace DigitalLibrary_NBA_IT.Controllers
             var book = db.Books.FirstOrDefault(b => b.Book_ID == bookId.ToString());
             if (book != null && decimal.TryParse(newPrice, out decimal parsedPrice))
             {
-                book.Price = parsedPrice.ToString("0.00");
+                // אם המחיר החדש נמוך מהמחיר הנוכחי
+                if (decimal.TryParse(book.Price, out decimal currentPrice) && parsedPrice < currentPrice)
+                {
+                    book.OriginalPrice = book.Price; // שמירת המחיר המקורי
+                }
+
+                book.Price = parsedPrice.ToString("0.00"); // עדכון המחיר החדש
                 db.SaveChanges();
                 TempData["Message"] = $"The price for {book.Title} was updated successfully.";
             }
@@ -124,6 +130,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             return RedirectToAction("ManageBooks");
         }
+
 
         // פעולה למחיקת ספר
         [HttpPost]

@@ -1,22 +1,136 @@
-﻿@{
-    ViewBag.Title = "Verify Code";
-}
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify Code | Digital Library</title>
+    <!-- הוספת Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f'); /* תמונת רקע */
+            background-size: cover;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            color: #e0e0e0;
+        }
 
-<div class="container mt-5">
-    <h2>Verify Reset Code</h2>
-    <p>Please enter the code sent to your email address.</p>
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1030;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
-    }
+        .verify-code-container {
+            max-width: 420px;
+            margin: 120px auto 50px auto;
+            background: #2b1d0f;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            border: 2px solid #d4af37;
+            color: #f5f5f5;
+        }
 
-    <form method="post" action="@Url.Action("VerifyCode", "User")">
-        @Html.AntiForgeryToken()
-        <div class="form-group">
-            <label for="code">Reset Code:</label>
-            <input type="text" name="code" class="form-control" required />
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #d4af37;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-control {
+            background-color: #3e2c20;
+            color: #f5f5f5;
+            border: 1px solid #d4af37;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+            .form-control:focus {
+                border-color: #d4af37;
+                box-shadow: 0 0 5px rgba(212, 175, 55, 0.7);
+                background-color: #3e2c20;
+                color: #fff;
+            }
+
+        .btn-primary {
+            background-color: #000;
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            padding: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background-color: #d4af37;
+                color: #000;
+                border: 1px solid #000;
+            }
+
+        .error-message {
+            text-align: center;
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <span class="navbar-brand">Digital Library</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        @Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Register", "Register", "User", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Login", "Login", "User", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Welcome", "Welcome", "Home", null, new { @class = "nav-link" })
+                    </li>
+                </ul>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Verify</button>
-    </form>
-</div>
+    </nav>
+
+    <div class="verify-code-container shadow-lg">
+        <h2>Verify Reset Code</h2>
+        <p>Please enter the code sent to your email address.</p>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <form method="post" action="@Url.Action("VerifyCode", "User")">
+            @Html.AntiForgeryToken()
+            <div>
+                <label for="code" class="form-label">Reset Code:</label>
+                <input type="text" name="code" id="code" class="form-control" placeholder="Enter your reset code" required />
+            </div>
+            <button type="submit" class="btn btn-primary mt-3 w-100">Verify</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -286,6 +286,9 @@
             {
                 decimal price = 0;
                 decimal.TryParse(book.Price.Trim(), out price);
+                decimal originalPrice = 0;
+                decimal.TryParse(book.OriginalPrice, out originalPrice);
+
 
 
                 bool isPopular = price > 20;
@@ -302,7 +305,21 @@
                             <h5 class="card-title">@book.Title</h5>
                             <p class="card-text">Publisher: @book.Publish</p>
                             <p class="card-text">Age: @book.age+</p>
-                            <p class="card-text">Price (Buy): $@(price.ToString("F2"))</p>
+                            @if (originalPrice > price)
+                            {
+                                <p class="card-text">
+                                    <span style="text-decoration: line-through; color: red;">
+                                        $@(originalPrice.ToString("F2"))
+                                    </span>
+                                    <span style="color: green; font-weight: bold;">
+                                        $@(price.ToString("F2"))
+                                    </span>
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="card-text">Price (Buy): $@(price.ToString("F2"))</p>
+                            }
 
                             @if (!isPopular)
                             {

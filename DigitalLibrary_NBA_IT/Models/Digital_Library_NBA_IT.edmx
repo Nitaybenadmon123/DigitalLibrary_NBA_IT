@@ -25,6 +25,7 @@
           <Property Name="CopiesAvailable" Type="nchar" MaxLength="10" Nullable="false" />
           <Property Name="ImageUrl" Type="varchar" MaxLength="500" />
           <Property Name="age" Type="int" />
+          <Property Name="OriginalPrice" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="CART">
           <Key>
@@ -347,6 +348,7 @@
           <NavigationProperty Name="Reviews" Relationship="Digital_library_DBModel.FK_Reviews_Books" FromRole="Books" ToRole="Reviews" />
           <NavigationProperty Name="UserLibrary" Relationship="Digital_library_DBModel.FK_UserLibrary_Books" FromRole="Books" ToRole="UserLibrary" />
           <NavigationProperty Name="WAITLIST" Relationship="Digital_library_DBModel.FK_Waitlist_Books" FromRole="Books" ToRole="WAITLIST" />
+          <Property Name="OriginalPrice" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="CART">
           <Key>
@@ -570,6 +572,7 @@
           <EntitySetMapping Name="Books">
             <EntityTypeMapping TypeName="Digital_library_DBModel.Books">
               <MappingFragment StoreEntitySet="Books">
+                <ScalarProperty Name="OriginalPrice" ColumnName="OriginalPrice" />
                 <ScalarProperty Name="age" ColumnName="age" />
                 <ScalarProperty Name="ImageUrl" ColumnName="ImageUrl" />
                 <ScalarProperty Name="CopiesAvailable" ColumnName="CopiesAvailable" />

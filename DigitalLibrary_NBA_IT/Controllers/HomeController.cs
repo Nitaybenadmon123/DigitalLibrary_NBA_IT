@@ -300,6 +300,13 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // פעולה להוספת ספר לעגלה
         public ActionResult AddToCart(string id, string type)
         {
+
+            if (Session["UserID"] == null)
+            {
+                TempData["Message"] = "You must be logged in to add items to your cart.please log in or register ";
+                return RedirectToAction("Login", "User");
+            }
+
             var book = db.Books.Find(id);
             if (book == null)
             {
@@ -482,9 +489,11 @@ namespace DigitalLibrary_NBA_IT.Controllers
             return RedirectToAction("Cart");
         }
 
-
-
-
+        public ActionResult Welcome()
+        {
+            var books = db.Books.ToList(); // שליפת כל הספרים
+            return View(books);
+        }
 
 
     }

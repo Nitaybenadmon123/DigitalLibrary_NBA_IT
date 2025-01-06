@@ -1,0 +1,238 @@
+﻿@{
+    ViewBag.Title = "Welcome to the Digital Library";
+}
+
+<style>
+    /* עיצוב כללי */
+    body {
+        background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* אזור קבלת פנים */
+    .welcome-section {
+        text-align: center;
+        color: white;
+        padding: 100px 20px;
+        background: rgba(0, 0, 0, 0.8);
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+        .welcome-section h1 {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.9);
+        }
+
+        .welcome-section p {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 40px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+    .btn-register {
+        font-size: 1.5rem;
+        padding: 15px 40px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+        .btn-register:hover {
+            background-color: #45a049;
+            transform: scale(1.1);
+        }
+
+    /* אזור ספרים פופולריים */
+    .popular-books {
+        padding: 50px 15px;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: white;
+    }
+
+        .popular-books h2 {
+            font-size: 2.8rem;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+    .book-card {
+        margin: 20px auto;
+        max-width: 280px;
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .book-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .book-card .card-body {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .book-card h5 {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .book-card p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .book-card .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+            margin-top: 15px;
+        }
+
+            .book-card .btn:hover {
+                background-color: #0056b3;
+            }
+</style>
+
+<!-- אזור קבלת פנים -->
+<div class="welcome-section">
+    <h1>Welcome to the Digital Library</h1>
+    <p>Unleash the power of knowledge with thousands of books, authors, and genres.</p>
+    <a href="@Url.Action("Register", "User")" class="btn-register">Join Now</a>
+</div>
+
+<!-- אזור ספרים פופולריים -->
+<div class="popular-books">
+    <h2>Popular Books</h2>
+    <div class="row justify-content-center">
+        @foreach (var book in Model)
+        {
+            decimal price;
+            if (decimal.TryParse(book.Price, out price) && price > 20)
+            {
+                <div class="col-md-3">
+                    <div class="book-card">
+                        <img src="@(!string.IsNullOrEmpty(book.ImageUrl)
+                                    ? book.ImageUrl
+                                    : "https://via.placeholder.com/300x200?text=No+Image")" alt="@book.Title" />
+                        <div class="card-body">
+                            <h5>@book.Title</h5>
+                            <p>Publisher: @book.Publish</p>
+                            <p>Price: $@price.ToString("F2")</p>
+                            <button class="btn btn-primary" onclick="openBookDetails('@book.Book_ID')">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+<div class="modal fade" id="bookDetailsModal" tabindex="-1" aria-labelledby="bookDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookDetailsLabel">Book Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="bookDetailsContent">
+                <!-- פרטי הספר ייטענו כאן דינאמית -->
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function openBookDetails(bookId) {
+        if (!bookId) {
+            alert("Invalid Book ID");
+            return;
+        }
+
+        fetch(`/Home/GetBookDetails?id=${bookId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert(data.message);
+                    return;
+                }
+
+                const book = data.data.Book;
+                const authors = data.data.Authors.map(author => `<li>${author.Name} - ${author.Bio}</li>`).join('');
+                const genres = data.data.Genres.map(genre => `<li>${genre}</li>`).join('');
+                const reviews = data.data.Reviews.length > 0
+                    ? data.data.Reviews.map(review => `
+                        <li>
+                            <strong>User ID: ${review.User_ID}</strong> rated ${review.Rating}/5
+                            <p>${review.Feedback}</p>
+                            <small>${new Date(review.ReviewDate).toLocaleDateString()}</small>
+                        </li>
+                    `).join('')
+                    : '<li>No reviews available for this book.</li>';
+
+                const content = `
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="${book.ImageUrl || 'https://via.placeholder.com/300x400'}" class="img-fluid" alt="${book.Title}">
+                        </div>
+                        <div class="col-md-8">
+                            <h4>${book.Title}</h4>
+                            <p><strong>Publisher:</strong> ${book.Publish}</p>
+                            <p><strong>Price:</strong> $${book.Price}</p>
+                            <p><strong>Copies Available:</strong> ${book.CopiesAvailable}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h5>Authors:</h5>
+                    <ul>${authors}</ul>
+                    <hr>
+                    <h5>Genres:</h5>
+                    <ul>${genres}</ul>
+                    <hr>
+                    <h5>Reviews:</h5>
+                    <ul>${reviews}</ul>
+                `;
+
+                document.getElementById('bookDetailsContent').innerHTML = content;
+                const modal = new bootstrap.Modal(document.getElementById('bookDetailsModal'));
+                modal.show();
+            })
+            .catch(error => {
+                console.error("Error fetching book details:", error);
+                alert("An error occurred while fetching book details.");
+            });
+    }
+</script>
+
