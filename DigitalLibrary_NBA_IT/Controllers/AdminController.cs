@@ -184,7 +184,8 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 Price = Price.ToString("0.00"),
                 CopiesAvailable = CopiesAvailable.ToString(),
                 ImageUrl = ImageUrl,
-                age = age // הוספת מגבלת גיל
+                age = age, // הוספת מגבלת גיל
+                OriginalPrice = null
 
             };
 
