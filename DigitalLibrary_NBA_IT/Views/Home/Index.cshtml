@@ -481,7 +481,7 @@ function filterBooksByGenre(genreName) {
                 <h5>Waitlist:</h5>
                 <p>${data.data.WaitlistCount} user(s) waiting for this book</p>
                 <ul>
-                    ${data.data.Waitlist.map(w => `<li>User ID: ${w.User_ID}, Date Added: ${new Date(w.DateAdded).toLocaleDateString()}</li>`).join('')}
+                    ${data.data.Waitlist.map(w => `<li>User ID: ${w.User_ID}, Date Added: ${new Date(parseInt(w.DateAdded.replace(/[^0-9]/g, ''))).toLocaleDateString()}</li>`).join('')}
                 </ul>
                 <hr>
                 <h5>Reviews:</h5>
@@ -510,6 +510,8 @@ function filterBooksByGenre(genreName) {
                 alert("An error occurred while fetching book details.");
             });
     }
+
+
     function shareOnFacebook(title, url) {
         const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(`Check out this book: ${title}`)}`;
         window.open(fbUrl, '_blank');
