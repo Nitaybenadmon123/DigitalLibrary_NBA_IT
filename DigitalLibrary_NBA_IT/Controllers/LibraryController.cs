@@ -26,13 +26,9 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 .Where(ul => ul.User_ID == userId)
                 .ToList();
 
-            // סינון ספרים מושאלים שפג תוקפם
-            userLibrary = userLibrary
-                .Where(book => !(book.IsBorrowed && book.ExpiryDate.HasValue && DateTime.Now > book.ExpiryDate))
-                .ToList();
-
             return View(userLibrary);
         }
+
 
 
 
@@ -177,6 +173,9 @@ namespace DigitalLibrary_NBA_IT.Controllers
             var fileBytes = System.Text.Encoding.UTF8.GetBytes(fileContent);
             return File(fileBytes, "application/octet-stream", fileName);
         }
+       
+
+
 
 
 

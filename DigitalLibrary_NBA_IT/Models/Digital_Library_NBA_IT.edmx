@@ -66,6 +66,7 @@
           <Property Name="PurchaseDate" Type="datetime" Nullable="false" />
           <Property Name="IsBorrowed" Type="bit" Nullable="false" />
           <Property Name="ExpiryDate" Type="datetime" />
+          <Property Name="ReminderSent" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="USERS">
           <Key>
@@ -396,6 +397,7 @@
           <Property Name="ExpiryDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Books" Relationship="Digital_library_DBModel.FK_UserLibrary_Books" FromRole="UserLibrary" ToRole="Books" />
           <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK_UserLibrary_Users" FromRole="UserLibrary" ToRole="USERS" />
+          <Property Name="ReminderSent" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="USERS">
           <Key>
@@ -618,6 +620,7 @@
           <EntitySetMapping Name="UserLibrary">
             <EntityTypeMapping TypeName="Digital_library_DBModel.UserLibrary">
               <MappingFragment StoreEntitySet="UserLibrary">
+                <ScalarProperty Name="ReminderSent" ColumnName="ReminderSent" />
                 <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
                 <ScalarProperty Name="IsBorrowed" ColumnName="IsBorrowed" />
                 <ScalarProperty Name="PurchaseDate" ColumnName="PurchaseDate" />

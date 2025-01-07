@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using DigitalLibrary_NBA_IT.Models;
 using BCrypt.Net;
+using System.Data.Entity;
 
 namespace DigitalLibrary_NBA_IT.Controllers
 {
@@ -84,11 +85,15 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 // בדיקת הסיסמה שהוזנה מול הסיסמה המוצפנת
                 if (BCrypt.Net.BCrypt.Verify(password, user.password))
                 {
+                    HandleExpiredLoansForAllUsers();
+
                     if (user.isAdmin)
                     {
                         Session["UserID"] = user.user_id;
                         Session["UserName"] = user.name;
                         Session["IsAdmin"] = true;
+
+
                         return RedirectToAction("AdminDashboard");
                     }
                     else
@@ -96,6 +101,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
                         Session["UserID"] = user.user_id;
                         Session["UserName"] = user.name;
                         Session["IsAdmin"] = false;
+
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -221,6 +227,75 @@ namespace DigitalLibrary_NBA_IT.Controllers
             TempData["Error"] = "Failed to reset password.";
             return View();
         }
+
+        private void HandleExpiredLoansForAllUsers()
+        {
+            var emailService = new EmailService();
+
+            // שליפת השאלות שפג תוקפן
+            var expiredLoans = db.UserLibrary
+                .Where(ul => ul.IsBorrowed && ul.ExpiryDate.HasValue && ul.ExpiryDate <= DateTime.Now)
+                .ToList();
+
+            foreach (var loan in expiredLoans)
+            {
+                var book = db.Books.FirstOrDefault(b => b.Book_ID == loan.Book_ID);
+                if (book != null)
+                {
+                    // העלאת המלאי של הספר
+                    if (int.TryParse(book.CopiesAvailable, out int copies))
+                    {
+                        book.CopiesAvailable = (copies + 1).ToString();
+                    }
+                }
+
+                // הסרת הספר מהטבלה של המשתמש
+                db.UserLibrary.Remove(loan);
+            }
+
+            // שליפת השאלות שחמישה ימים לפני תום תקופת ההשאלה ושלא נשלחה להן תזכורת
+            var soonToExpireLoans = db.UserLibrary
+                .Where(ul => ul.IsBorrowed && ul.ExpiryDate.HasValue &&
+                             DbFunctions.DiffDays(DateTime.Now, ul.ExpiryDate.Value) == 5 &&
+                             ul.ReminderSent == false)
+                .ToList();
+
+            foreach (var loan in soonToExpireLoans)
+            {
+                var user = db.USERS.FirstOrDefault(u => u.user_id == loan.User_ID);
+                var book = db.Books.FirstOrDefault(b => b.Book_ID == loan.Book_ID);
+
+                if (user != null && book != null)
+                {
+                    // שליחת מייל למשתמש
+                    string subject = $"Reminder: Borrowed book '{book.Title}' is due in 5 days";
+                    string body = $@"
+                Dear {user.name},<br/><br/>
+                This is a friendly reminder that the borrowed book '<b>{book.Title}</b>' will be due in 5 days.<br/>
+                Please make sure to return it on time to avoid any inconvenience.<br/><br/>
+                Thank you for using our digital library!<br/>
+                <i>Digital Library Team</i>";
+
+                    try
+                    {
+                        emailService.SendEmail(user.email, subject, body);
+
+                        // עדכון ReminderSent ל-true
+                        loan.ReminderSent = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        // טיפול בשגיאות שליחת מייל (לא יגרום להפסקת התהליך)
+                        Console.WriteLine($"Failed to send email to {user.email}: {ex.Message}");
+                    }
+                }
+            }
+
+            db.SaveChanges();
+        }
+
+
+
 
 
 

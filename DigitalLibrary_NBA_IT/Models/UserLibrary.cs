@@ -20,6 +20,7 @@ namespace DigitalLibrary_NBA_IT.Models
         public System.DateTime PurchaseDate { get; set; }
         public bool IsBorrowed { get; set; }
         public Nullable<System.DateTime> ExpiryDate { get; set; }
+        public bool ReminderSent { get; set; }
     
         public virtual Books Books { get; set; }
         public virtual USERS USERS { get; set; }
