@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Waitlist | Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .table-container {
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        #searchInput {
+            margin-bottom: 20px;
+        }
+
+        .loader {
+            display: none;
+            margin: 0 auto;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">Manage Waitlist</h1>
+
+        <!-- הודעות -->
+        <div id="messageBox" class="alert" style="display: none;"></div>
+
+        <!-- סרגל חיפוש -->
+        <div class="table-container">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search users by name, email, or book title..." />
+        </div>
+
+        <!-- טבלת רשימת ההמתנה -->
+        <div class="table-container">
+            <div class="loader" id="loader"></div>
+            <table class="table table-striped table-bordered" id="waitlistTable">
+                <thead>
+                    <tr>
+                        <th>Waitlist ID</th>
+                        <th>Book Title</th>
+                        <th>User Name</th>
+                        <th>User Email</th>
+                        <th>Date Added</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="waitlistTableBody">
+                    <!-- התוכן ייטען באופן דינמי -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // הצגת ספינר
+        function showLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+        }
+
+        // הסתרת ספינר
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'none';
+        }
+
+        // טעינת רשימת ההמתנה
+        function loadWaitlist() {
+            const loader = document.getElementById('loader');
+            const waitlistTableBody = document.getElementById('waitlistTableBody');
+            const messageBox = document.getElementById('messageBox');
+
+            showLoader();
+            waitlistTableBody.innerHTML = ''; // ניקוי הטבלה
+
+            fetch('/Admin/GetWaitlistDetails')
+                .then(response => response.json())
+                .then(data => {
+                    hideLoader();
+
+                    if (data.success) {
+                        const waitlist = data.Waitlist;
+
+                        waitlist.forEach(entry => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                    <td>${entry.Waitlist_ID}</td>
+                                    <td>${entry.BookTitle}</td>
+                                    <td>${entry.UserName}</td>
+                                    <td>${entry.UserEmail}</td>
+                                    <td>${new Date(entry.DateAdded).toLocaleDateString()}</td>
+                                    <td>
+                                        <button class="btn btn-success btn-sm" onclick="notifyUser(${entry.Waitlist_ID})">Notify</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteWaitlistEntry(${entry.Waitlist_ID})">Delete</button>
+                                    </td>
+                                `;
+                            waitlistTableBody.appendChild(row);
+                        });
+                    } else {
+                        messageBox.style.display = 'block';
+                        messageBox.className = 'alert alert-warning';
+                        messageBox.textContent = data.message;
+                    }
+                })
+                .catch(error => {
+                    hideLoader();
+                    messageBox.style.display = 'block';
+                    messageBox.className = 'alert alert-danger';
+                    messageBox.textContent = 'An error occurred while loading the waitlist.';
+                    console.error('Error:', error);
+                });
+        }
+
+        // מחיקת רשומה
+        function deleteWaitlistEntry(waitlistId) {
+            if (!confirm('Are you sure you want to delete this waitlist entry?')) return;
+
+            // שליחת בקשת מחיקה לשרת
+            fetch('/Admin/DeleteWaitlistEntry', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({ waitlistId: waitlistId }) // שליחת מזהה הרשומה למחיקה
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete the waitlist entry');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message); // הודעה למשתמש
+                    if (data.success) {
+                        // מחיקת השורה מהטבלה
+                        const row = document.getElementById(`waitlistRow-${waitlistId}`);
+                        if (row) {
+                            row.remove();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the waitlist entry.');
+                });
+        }
+
+
+        // חיפוש בזמן אמת
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const searchValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#waitlistTableBody tr');
+
+            rows.forEach(row => {
+                const bookTitle = row.cells[1].textContent.toLowerCase();
+                const userName = row.cells[2].textContent.toLowerCase();
+                const userEmail = row.cells[3].textContent.toLowerCase();
+
+                if (bookTitle.includes(searchValue) || userName.includes(searchValue) || userEmail.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // טעינת הנתונים כאשר הדף נטען
+        document.addEventListener('DOMContentLoaded', loadWaitlist);
+    </script>
+</body>
+</html>
