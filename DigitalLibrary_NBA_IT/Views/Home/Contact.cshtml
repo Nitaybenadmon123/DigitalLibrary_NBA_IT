@@ -19,7 +19,14 @@
             margin: 0;
             padding: 0;
         }
-
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1030;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
         .contact-container {
             background-color: rgba(255, 255, 255, 0.9);
             padding: 40px;
@@ -91,6 +98,61 @@
     </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <span class="navbar-brand">Digital Library</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    @*<li class="nav-item">
+                            @Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link" })
+                        </li>*@
+                    <li class="nav-item">
+                        @Html.ActionLink("About", "About", "Home", null, new { @class = "nav-link" })
+                    </li>
+                    @*<li class="nav-item">
+                            @Html.ActionLink("Register", "Register", "User", null, new { @class = "nav-link" })
+                        </li>
+                        <li class="nav-item">
+                            @Html.ActionLink("Login", "Login", "User", null, new { @class = "nav-link active" })
+                        </li>*@
+
+                    @if (Session["UserID"] != null)
+                    {
+                        <li><a class="nav-link" href="@Url.Action("Index", "Home")">Home</a></li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Profile", "UserProfile")">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Logout", "User")">Logout</a>
+                        </li>
+                        <li><a class="nav-link" href="@Url.Action("PersonalLibrary", "Library")">My Library</a></li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Register", "User")">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Login", "User")">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            @Html.ActionLink("Welcome", "Welcome", "Home", null, new { @class = "nav-link" })
+                        </li>
+                        @*<li class="nav-item">
+                                @if (ViewContext.RouteData.Values["action"].ToString() != "Welcome")
+                                {
+                                    <a class="nav-link" href="@Url.Action("Welcome", "Home")">Welcome</a>
+                                }
+                            </li>*@
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="container">
         <div class="contact-container">
             <h1 class="contact-header">Get in Touch</h1>
@@ -118,9 +180,9 @@
                     <strong>Phone:</strong> +972-54-123-4567
                 </p>
             </div>
-            <p class="contact-details text-center">
+            @*<p class="contact-details text-center">
                 <button class="btn-back" onclick="window.location.href='/Home/Index'">Back to Home</button>
-            </p>
+            </p>*@
         </div>
     </div>
 
