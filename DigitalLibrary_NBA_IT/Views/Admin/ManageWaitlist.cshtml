@@ -65,7 +65,8 @@
                                 <form action="/Admin/NotifyUser" method="post" style="display:inline-block;">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="waitlistId" value="@entry.ID" />
-                                    <button type="submit" class="btn btn-success btn-sm">Notify</button>
+                                    <!-- Notify Button -->
+                                    <button type="button" class="btn btn-success btn-sm" onclick="openNotifyModal(@entry.ID, '@entry.USERS.email')">Notify</button>
                                 </form>
 
                                 <!-- Delete Button -->
@@ -87,6 +88,33 @@
             </table>
         </div>
     </div>
+    <!-- Notify Modal -->
+    <div class="modal fade" id="notifyModal" tabindex="-1" aria-labelledby="notifyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notifyModalLabel">Send Notification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/Admin/NotifyUser" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="notifyWaitlistId" name="waitlistId" />
+                        <div class="mb-3">
+                            <label for="notifyEmail" class="form-label">Recipient Email</label>
+                            <input type="email" class="form-control" id="notifyEmail" name="email" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label for="notifyMessage" class="form-label">Message</label>
+                            <textarea class="form-control" id="notifyMessage" name="message" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -109,5 +137,17 @@
         });
 
     </script>
+     
+    <script>
+        function openNotifyModal(waitlistId, email) {
+            document.getElementById('notifyWaitlistId').value = waitlistId;
+            document.getElementById('notifyEmail').value = email;
+            document.getElementById('notifyMessage').value = ''; // Clear previous message
+            const modal = new bootstrap.Modal(document.getElementById('notifyModal'));
+            modal.show();
+        }
+
+    </script>
+
 </body>
 </html>
