@@ -14,13 +14,13 @@
 <<<<<<< HEAD
         
         
-        <EntityTypeShape EntityType="Digital_library_DBModel.Authors" Width="1.5" PointX="13.25" PointY="15" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.Books" Width="1.5" PointX="1.25" PointY="12.875" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.Genres" Width="1.5" PointX="10.125" PointY="9.5" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.Reviews" Width="1.5" PointX="3.875" PointY="16.5" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.UserLibrary" Width="1.5" PointX="16.875" PointY="19" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.USERS" Width="1.5" PointX="4.25" PointY="8" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.WAITLIST" Width="1.5" PointX="16.625" PointY="13.375" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.Authors" Width="1.5" PointX="8.375" PointY="1.125" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.Books" Width="1.5" PointX="3.75" PointY="1.125" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.Genres" Width="1.5" PointX="6.125" PointY="1.125" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.Reviews" Width="1.5" PointX="10.875" PointY="4.375" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.UserLibrary" Width="1.5" PointX="6" PointY="4.5" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.USERS" Width="1.5" PointX="0.625" PointY="1.125" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.WAITLIST" Width="1.5" PointX="10.625" PointY="0.875" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Authors_Books" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Genres_Books" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Reviews_Books" />
@@ -29,7 +29,7 @@
         <AssociationConnector Association="Digital_library_DBModel.FK_Reviews_Users" />
         <AssociationConnector Association="Digital_library_DBModel.FK_UserLibrary_Users" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Waitlist_Users" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.SiteFeedback" Width="1.5" PointX="8.0150784812937861" PointY="21.910314480732342" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.SiteFeedback" Width="1.5" PointX="8.375" PointY="4.375" />
         <AssociationConnector Association="Digital_library_DBModel.FK__SiteFeedb__User___25518C17" />
         
         
