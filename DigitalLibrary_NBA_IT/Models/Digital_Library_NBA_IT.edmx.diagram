@@ -16,19 +16,16 @@
         
         <EntityTypeShape EntityType="Digital_library_DBModel.Authors" Width="1.5" PointX="13.25" PointY="15" />
         <EntityTypeShape EntityType="Digital_library_DBModel.Books" Width="1.5" PointX="9.43181920490778" PointY="17.392101430051078" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.CART" Width="1.5" PointX="2.7929305093330008" PointY="10.853954096722395" />
         <EntityTypeShape EntityType="Digital_library_DBModel.Genres" Width="1.5" PointX="12.875" PointY="10.875" />
         <EntityTypeShape EntityType="Digital_library_DBModel.Reviews" Width="1.5" PointX="4.3201870230586206" PointY="17.804145344441825" />
         <EntityTypeShape EntityType="Digital_library_DBModel.UserLibrary" Width="1.5" PointX="11.138229650975312" PointY="17.962828957458413" />
         <EntityTypeShape EntityType="Digital_library_DBModel.USERS" Width="1.5" PointX="9.25" PointY="8.375" />
         <EntityTypeShape EntityType="Digital_library_DBModel.WAITLIST" Width="1.5" PointX="8.5773810206807131" PointY="12.936379572812644" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Authors_Books" />
-        <AssociationConnector Association="Digital_library_DBModel.FK__CART__book_id__787EE5A0" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Genres_Books" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Reviews_Books" />
         <AssociationConnector Association="Digital_library_DBModel.FK_UserLibrary_Books" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Waitlist_Books" />
-        <AssociationConnector Association="Digital_library_DBModel.FK__CART__user_id__778AC167" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Reviews_Users" />
         <AssociationConnector Association="Digital_library_DBModel.FK_UserLibrary_Users" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Waitlist_Users" />

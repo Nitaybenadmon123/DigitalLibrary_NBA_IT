@@ -17,7 +17,6 @@ namespace DigitalLibrary_NBA_IT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public USERS()
         {
-            this.CART = new HashSet<CART>();
             this.Reviews = new HashSet<Reviews>();
             this.UserLibrary = new HashSet<UserLibrary>();
             this.WAITLIST = new HashSet<WAITLIST>();
@@ -30,8 +29,6 @@ namespace DigitalLibrary_NBA_IT.Models
         public Nullable<System.DateTime> registration_date { get; set; }
         public bool isAdmin { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CART> CART { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Reviews> Reviews { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

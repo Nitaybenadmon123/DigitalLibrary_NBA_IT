@@ -27,7 +27,6 @@ namespace DigitalLibrary_NBA_IT.Models
     
         public virtual DbSet<Authors> Authors { get; set; }
         public virtual DbSet<Books> Books { get; set; }
-        public virtual DbSet<CART> CART { get; set; }
         public virtual DbSet<Genres> Genres { get; set; }
         public virtual DbSet<Reviews> Reviews { get; set; }
         public virtual DbSet<UserLibrary> UserLibrary { get; set; }

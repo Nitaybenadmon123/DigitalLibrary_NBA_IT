@@ -164,9 +164,6 @@
     <Compile Include="Models\Books.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CART.cs">
-      <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\Digital_Library_NBA_IT.Context.cs">
       <AutoGen>True</AutoGen>
