@@ -20,6 +20,7 @@ namespace DigitalLibrary_NBA_IT.Models
             this.Reviews = new HashSet<Reviews>();
             this.UserLibrary = new HashSet<UserLibrary>();
             this.WAITLIST = new HashSet<WAITLIST>();
+            this.SiteFeedback = new HashSet<SiteFeedback>();
         }
     
         public int user_id { get; set; }
@@ -35,5 +36,7 @@ namespace DigitalLibrary_NBA_IT.Models
         public virtual ICollection<UserLibrary> UserLibrary { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WAITLIST> WAITLIST { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SiteFeedback> SiteFeedback { get; set; }
     }
 }

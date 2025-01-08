@@ -19,9 +19,12 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort>44313</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>
+    </IISExpressUseClassicPipelineMode>
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -187,6 +190,9 @@
     <Compile Include="Models\Reviews.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SiteFeedback.cs">
+      <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\UserLibrary.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>
@@ -285,6 +291,7 @@
     <Content Include="Views\Library\AddReview.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
     <Content Include="Views\Admin\ManageWaitlist.cshtml" />
+    <Content Include="Views\User\SiteFeedback.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

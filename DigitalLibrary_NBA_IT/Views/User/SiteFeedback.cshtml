@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Site Feedback";
+}
+
+<h2>Site Feedback</h2>
+
+@using (Html.BeginForm("SiteFeedback", "User", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label for="stars" class="control-label">Rate our site (1-5):</label>
+        <input type="number" id="stars" name="stars" class="form-control" min="1" max="5" required />
+    </div>
+
+    <div class="form-group">
+        <label for="feedback" class="control-label">Your feedback:</label>
+        <textarea id="feedback" name="feedback" class="form-control" rows="5"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+}

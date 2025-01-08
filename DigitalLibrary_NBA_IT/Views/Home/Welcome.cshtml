@@ -23,6 +23,30 @@
         box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
     }
 
+    .feedback-section {
+        display: flex;
+        flex-direction: column; /* מציב את האלמנטים בטור */
+        align-items: center; /* ממרכז את הכפתורים */
+        margin-top: 20px; /* מוסיף רווח מלמעלה */
+    }
+
+    .feedback-button {
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 8px;
+        background-color: #28a745; /* צבע ירוק */
+        color: white;
+        border: none;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        margin-top: 10px; /* רווח מעל הכפתור */
+    }
+
+        .feedback-button:hover {
+            background-color: #218838; /* צבע ירוק כהה יותר */
+            transform: scale(1.05); /* הגדלה קלה בזמן מעבר עכבר */
+        }
+
+
         .welcome-section h1 {
             font-size: 4rem;
             font-weight: bold;
@@ -58,10 +82,11 @@
 
     /* אזור ספרים פופולריים */
     .popular-books {
-        padding: 50px 15px;
+        padding: 20px 15px; /* צמצום המרווח האנכי */
         text-align: center;
         background-color: rgba(0, 0, 0, 0.9);
         color: white;
+        margin-top: -20px; /* הזזה כלפי מעלה */
     }
 
         .popular-books h2 {
@@ -133,8 +158,29 @@
     <h1>Welcome to the Digital Library</h1>
     <p>Unleash the power of knowledge with thousands of books, authors, and genres.</p>
     <a href="@Url.Action("Register", "User")" class="btn-register">Join Now</a>
+    <div class="feedback-section text-center mt-4">
+        <span class="feedback-text">How were we rated?</span>
+        <button type="button" class="btn btn-info feedback-button" data-bs-toggle="modal" data-bs-target="#siteFeedbackModal">
+            View Feedbacks
+        </button>
+    </div>
 </div>
-
+<div class="modal fade" id="siteFeedbackModal" tabindex="-1" aria-labelledby="siteFeedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="siteFeedbackModalLabel">ביקורות על האתר</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="feedbackContent">
+                    הביקורות ייטענו כאן
+                    <p class="text-center text-muted">טוען ביקורות...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- אזור ספרים פופולריים -->
 <div class="popular-books">
     <h2>Popular Books</h2>
@@ -234,5 +280,39 @@
                 alert("An error occurred while fetching book details.");
             });
     }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const siteFeedbackModal = document.getElementById("siteFeedbackModal");
+        const feedbackContent = document.getElementById("feedbackContent");
+
+        siteFeedbackModal.addEventListener("show.bs.modal", function () {
+            fetch('@Url.Action("GetSiteFeedback", "Home")')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const feedbackHtml = data.map(f => `
+                            <div class="mb-3 border-bottom pb-2">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        ${'★'.repeat(f.Stars)}${'☆'.repeat(5 - f.Stars)}
+                                    </div>
+                                    <small class="ms-2 text-muted">${new Date(f.CreatedDate).toLocaleDateString()}</small>
+                                </div>
+                                <p>${f.Feedback || "No feedback provided."}</p>
+                            </div>
+                        `).join("");
+
+                        feedbackContent.innerHTML = feedbackHtml;
+                    } else {
+                        feedbackContent.innerHTML = `<p class="text-center text-muted">No feedback yet.</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error loading feedback:", error);
+                    feedbackContent.innerHTML = `<p class="text-center text-danger">Error loading feedback. Please try again later.</p>`;
+                });
+        });
+    });
 </script>
 

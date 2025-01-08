@@ -494,6 +494,22 @@ namespace DigitalLibrary_NBA_IT.Controllers
             var books = db.Books.ToList(); // שליפת כל הספרים
             return View(books);
         }
+        [HttpGet]
+        public JsonResult GetSiteFeedback()
+        {
+            var feedbacks = db.SiteFeedback
+                .Select(f => new
+                {
+                    Stars = f.Stars,
+                    Feedback = f.Feedback,
+                    CreatedDate = f.CreatedDate
+                })
+                .OrderByDescending(f => f.CreatedDate)
+                .ToList();
+
+            return Json(feedbacks, JsonRequestBehavior.AllowGet);
+        }
+
 
 
     }

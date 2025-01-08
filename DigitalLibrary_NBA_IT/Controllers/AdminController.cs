@@ -26,10 +26,12 @@ namespace DigitalLibrary_NBA_IT.Controllers
         }
 
         // פעולה למחיקת משתמש
+        // פעולה למחיקת משתמש
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteUser(int userId)
         {
+            // בדיקת הרשאות אדמין
             if (Session["IsAdmin"] == null || !(bool)Session["IsAdmin"])
             {
                 return RedirectToAction("Login", "User");
@@ -39,9 +41,34 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             if (user != null)
             {
-                db.USERS.Remove(user);
-                db.SaveChanges();
-                TempData["Message"] = "User deleted successfully.";
+                try
+                {
+                    // מחיקת רשומות מטבלת WAITLIST
+                    var waitlistItems = db.WAITLIST.Where(w => w.User_ID == userId).ToList();
+                    db.WAITLIST.RemoveRange(waitlistItems);
+                    db.SaveChanges();
+
+                    // מחיקת רשומות מטבלת UserLibrary
+                    var userLibraryItems = db.UserLibrary.Where(ul => ul.User_ID == userId).ToList();
+                    db.UserLibrary.RemoveRange(userLibraryItems);
+                    db.SaveChanges();
+
+                    // מחיקת רשומות מטבלת Reviews
+                    var reviews = db.Reviews.Where(r => r.User_ID == userId).ToList();
+                    db.Reviews.RemoveRange(reviews);
+                    db.SaveChanges();
+
+                    // מחיקת המשתמש עצמו
+                    db.USERS.Remove(user);
+                    db.SaveChanges();
+
+                    TempData["Message"] = "User and related data deleted successfully.";
+                }
+                catch (Exception ex)
+                {
+                    string errorMessage = ex.InnerException?.Message ?? ex.Message;
+                    TempData["Message"] = $"An error occurred while deleting the user: {errorMessage}";
+                }
             }
             else
             {
@@ -50,6 +77,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             return RedirectToAction("ManageUsers");
         }
+
 
         // פעולה לעריכת משתמש (שלב הבא)
         [HttpGet]

@@ -46,6 +46,16 @@
           <Property Name="Feedback" Type="nvarchar(max)" />
           <Property Name="ReviewDate" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="SiteFeedback">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="User_ID" Type="int" Nullable="false" />
+          <Property Name="Stars" Type="int" />
+          <Property Name="Feedback" Type="nvarchar(max)" />
+          <Property Name="CreatedDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="UserLibrary">
           <Key>
             <PropertyRef Name="ID" />
@@ -78,6 +88,20 @@
           <Property Name="User_ID" Type="int" />
           <Property Name="DateAdded" Type="datetime" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'Digital_library_DB.sys.database_firewall_rules' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <Association Name="FK__SiteFeedb__User___25518C17">
+          <End Role="USERS" Type="Self.USERS" Multiplicity="1" />
+          <End Role="SiteFeedback" Type="Self.SiteFeedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USERS">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="SiteFeedback">
+              <PropertyRef Name="User_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Authors_Books">
           <End Role="Books" Type="Self.Books" Multiplicity="1" />
           <End Role="Authors" Type="Self.Authors" Multiplicity="*" />
@@ -189,9 +213,14 @@
           <EntitySet Name="Books" EntityType="Self.Books" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Genres" EntityType="Self.Genres" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Reviews" EntityType="Self.Reviews" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SiteFeedback" EntityType="Self.SiteFeedback" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserLibrary" EntityType="Self.UserLibrary" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="USERS" EntityType="Self.USERS" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WAITLIST" EntityType="Self.WAITLIST" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__SiteFeedb__User___25518C17" Association="Self.FK__SiteFeedb__User___25518C17">
+            <End Role="USERS" EntitySet="USERS" />
+            <End Role="SiteFeedback" EntitySet="SiteFeedback" />
+          </AssociationSet>
           <AssociationSet Name="FK_Authors_Books" Association="Self.FK_Authors_Books">
             <End Role="Books" EntitySet="Books" />
             <End Role="Authors" EntitySet="Authors" />
@@ -268,6 +297,11 @@
           <AssociationSet Name="FK_Waitlist_Users" Association="Digital_library_DBModel.FK_Waitlist_Users">
             <End Role="USERS" EntitySet="USERS" />
             <End Role="WAITLIST" EntitySet="WAITLIST" />
+          </AssociationSet>
+          <EntitySet Name="SiteFeedback" EntityType="Digital_library_DBModel.SiteFeedback" />
+          <AssociationSet Name="FK__SiteFeedb__User___25518C17" Association="Digital_library_DBModel.FK__SiteFeedb__User___25518C17">
+            <End Role="USERS" EntitySet="USERS" />
+            <End Role="SiteFeedback" EntitySet="SiteFeedback" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Authors">
@@ -347,6 +381,7 @@
           <NavigationProperty Name="Reviews" Relationship="Digital_library_DBModel.FK_Reviews_Users" FromRole="USERS" ToRole="Reviews" />
           <NavigationProperty Name="UserLibrary" Relationship="Digital_library_DBModel.FK_UserLibrary_Users" FromRole="USERS" ToRole="UserLibrary" />
           <NavigationProperty Name="WAITLIST" Relationship="Digital_library_DBModel.FK_Waitlist_Users" FromRole="USERS" ToRole="WAITLIST" />
+          <NavigationProperty Name="SiteFeedback" Relationship="Digital_library_DBModel.FK__SiteFeedb__User___25518C17" FromRole="USERS" ToRole="SiteFeedback" />
         </EntityType>
         <EntityType Name="WAITLIST">
           <Key>
@@ -465,6 +500,29 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="SiteFeedback">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="User_ID" Type="Int32" Nullable="false" />
+          <Property Name="Stars" Type="Int32" />
+          <Property Name="Feedback" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="USERS" Relationship="Digital_library_DBModel.FK__SiteFeedb__User___25518C17" FromRole="SiteFeedback" ToRole="USERS" />
+        </EntityType>
+        <Association Name="FK__SiteFeedb__User___25518C17">
+          <End Type="Digital_library_DBModel.USERS" Role="USERS" Multiplicity="1" />
+          <End Type="Digital_library_DBModel.SiteFeedback" Role="SiteFeedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="USERS">
+              <PropertyRef Name="user_id" />
+            </Principal>
+            <Dependent Role="SiteFeedback">
+              <PropertyRef Name="User_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -547,6 +605,17 @@
                 <ScalarProperty Name="DateAdded" ColumnName="DateAdded" />
                 <ScalarProperty Name="User_ID" ColumnName="User_ID" />
                 <ScalarProperty Name="Book_ID" ColumnName="Book_ID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SiteFeedback">
+            <EntityTypeMapping TypeName="Digital_library_DBModel.SiteFeedback">
+              <MappingFragment StoreEntitySet="SiteFeedback">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Feedback" ColumnName="Feedback" />
+                <ScalarProperty Name="Stars" ColumnName="Stars" />
+                <ScalarProperty Name="User_ID" ColumnName="User_ID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
