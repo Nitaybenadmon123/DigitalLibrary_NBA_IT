@@ -245,45 +245,12 @@ namespace DigitalLibrary_NBA_IT.Controllers
         ///////
         // פעולה להצגת רשימת ההמתנה
         [HttpGet]
-        public ActionResult ManageWaitlist(string query)
+        public ActionResult ManageWaitlist()
         {
-            if (Session["IsAdmin"] == null || !(bool)Session["IsAdmin"])
-            {
-                return RedirectToAction("Login", "User");
-            }
-
-            var waitlistData = db.WAITLIST
-                .Join(
-                    db.Books,
-                    waitlist => waitlist.Book_ID,
-                    book => book.Book_ID,
-                    (waitlist, book) => new { waitlist, book }
-                )
-                .Join(
-                    db.USERS,
-                    waitlistBook => waitlistBook.waitlist.User_ID,
-                    user => user.user_id,
-                    (waitlistBook, user) => new
-                    {
-                        Waitlist_ID = waitlistBook.waitlist.ID,
-                        BookTitle = waitlistBook.book.Title,
-                        UserName = user.name,
-                        UserEmail = user.email,
-                        DateAdded = waitlistBook.waitlist.DateAdded
-                    }
-                );
-
-            if (!string.IsNullOrEmpty(query))
-            {
-                waitlistData = waitlistData.Where(w =>
-                    w.BookTitle.Contains(query) ||
-                    w.UserName.Contains(query) ||
-                    w.UserEmail.Contains(query)
-                );
-            }
-
-            return View(waitlistData.ToList());
+            var waitlistEntries = db.WAITLIST.ToList();
+            return View(waitlistEntries);
         }
+
 
 
         [HttpPost]
@@ -323,30 +290,36 @@ namespace DigitalLibrary_NBA_IT.Controllers
         }
 
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult DeleteWaitlistEntry(int waitlistId)
+        public ActionResult DeleteWaitlistEntry(int waitlistId)
         {
             try
             {
-                // שליפת הרשומה ממסד הנתונים
                 var entry = db.WAITLIST.Find(waitlistId);
 
                 if (entry != null)
                 {
-                    db.WAITLIST.Remove(entry); // מחיקת הרשומה
-                    db.SaveChanges(); // שמירת השינויים במסד הנתונים
-                    return Json(new { success = true, message = "Waitlist entry deleted successfully." });
+                    db.WAITLIST.Remove(entry);
+                    db.SaveChanges();
+                    TempData["Message"] = "Waitlist entry deleted successfully.";
+
+                    // החזרת ה-View עם הרשומות המעודכנות
+                    var waitlistEntries = db.WAITLIST.ToList();
+                    return View("ManageWaitlist", waitlistEntries);
                 }
 
-                return Json(new { success = false, message = "Waitlist entry not found." });
+                TempData["Message"] = "Waitlist entry not found.";
+                return RedirectToAction("ManageWaitlist");
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+                TempData["Message"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction("ManageWaitlist");
             }
         }
+
+
 
 
         [HttpGet]
