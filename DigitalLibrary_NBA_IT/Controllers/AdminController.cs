@@ -255,11 +255,58 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult NotifyUser(int waitlistId, string message)
+        public ActionResult NotifyUser(int waitlistId, string message)
         {
-            return Json(new { success = false, message = "Error: Waitlist entry not found." });
+            var emailService = new EmailService();
+            try
+            {
+                var entry = db.WAITLIST.Find(waitlistId);
 
+                if (entry == null)
+                {
+                    TempData["Message"] = "Waitlist entry not found.";
+                    return RedirectToAction("ManageWaitlist");
+                }
+
+                // בדיקה אם למשתמש יש מייל תקין
+                string userEmail = entry.USERS?.email; // Assuming USERS table has an email field
+                if (string.IsNullOrEmpty(userEmail))
+                {
+                    TempData["Message"] = "User email not found.";
+                    return RedirectToAction("ManageWaitlist");
+                }
+
+                // פרטי המייל
+                string subject = $"Notification for '{entry.Books.Title}'";
+                string body = $@"
+            Dear {entry.USERS.name},<br/><br/>
+            {message}<br/><br/>
+            Thank you,<br/>
+            Digital Library Team";
+
+                try
+                {
+                    // שימוש בשירות שליחת מייל (יש להחליף את emailService בשירות שלך)
+                    emailService.SendEmail(userEmail, subject, body);
+                    TempData["Message"] = "Notification sent successfully.";
+                }
+                catch (Exception ex)
+                {
+                    // טיפול בשגיאה
+                    Console.WriteLine($"Failed to send email to {userEmail}: {ex.Message}");
+                    TempData["Message"] = $"Failed to send email: {ex.Message}";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = $"An error occurred: {ex.Message}";
+            }
+
+            // לאחר השלמת הפעולה, חזרה ל-View
+            return RedirectToAction("ManageWaitlist");
         }
+
+
 
 
         [HttpPost]
