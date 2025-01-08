@@ -257,36 +257,8 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult NotifyUser(int waitlistId, string message)
         {
-            try
-            {
-                var entry = db.WAITLIST.Find(waitlistId);
-                if (entry != null)
-                {
-                    var book = db.Books.Find(entry.Book_ID);
-                    var user = db.USERS.Find(entry.User_ID);
+            return Json(new { success = false, message = "Error: Waitlist entry not found." });
 
-                    if (book != null && user != null)
-                    {
-                        // שליחת אימייל למשתמש
-                        //EmailService.SendEmail(user.email, "Book Availability Notification", message);
-
-                        // הסרת הרשומה לאחר התראה
-                        db.WAITLIST.Remove(entry);
-                        db.SaveChanges();
-
-                        return Json(new { success = true, message = $"Notification sent to '{user.name}'." });
-                    }
-                    else
-                    {
-                        return Json(new { success = false, message = "Error: Book or user not found." });
-                    }
-                }
-                return Json(new { success = false, message = "Error: Waitlist entry not found." });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
-            }
         }
 
 
