@@ -32,6 +32,7 @@ namespace DigitalLibrary_NBA_IT.Models
         public string ImageUrl { get; set; }
         public Nullable<int> age { get; set; }
         public string OriginalPrice { get; set; }
+        public Nullable<System.DateTime> DiscountStartDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Authors> Authors { get; set; }

@@ -123,11 +123,30 @@ namespace DigitalLibrary_NBA_IT.Controllers
         }
 
 
+        // פעולה לעדכון מחיר הספר אחרי שעבר זמן ההנחה 
+        public void ResetDiscountIfExpired()
+        {
+            var booksWithDiscount = db.Books.Where(b => b.DiscountStartDate != null).ToList();
 
+            foreach (var book in booksWithDiscount)
+            {
+                if (book.DiscountStartDate.HasValue &&
+                    (DateTime.Now - book.DiscountStartDate.Value).TotalDays > 7)
+                {
+                    book.Price = book.OriginalPrice;
+                    book.OriginalPrice = null;
+                    book.DiscountStartDate = null;
+                }
+            }
+
+            db.SaveChanges();
+        }
 
         // פעולה ראשית להצגת הספרים וחיפוש
         public ActionResult Index(string query = "", string authorName = "", string sortOption = "", string genreName = "", decimal minPrice = 5, decimal maxPrice = 50)
         {
+            ResetDiscountIfExpired();
+
             var booksQuery = db.Books.AsQueryable();
 
             // חיפוש לפי שם הספר או המו"ל

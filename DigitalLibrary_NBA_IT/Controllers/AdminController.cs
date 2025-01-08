@@ -141,10 +141,10 @@ namespace DigitalLibrary_NBA_IT.Controllers
             var book = db.Books.FirstOrDefault(b => b.Book_ID == bookId.ToString());
             if (book != null && decimal.TryParse(newPrice, out decimal parsedPrice))
             {
-                // אם המחיר החדש נמוך מהמחיר הנוכחי
                 if (decimal.TryParse(book.Price, out decimal currentPrice) && parsedPrice < currentPrice)
                 {
                     book.OriginalPrice = book.Price; // שמירת המחיר המקורי
+                    book.DiscountStartDate = DateTime.Now; // שמירת תאריך תחילת המבצע
                 }
 
                 book.Price = parsedPrice.ToString("0.00"); // עדכון המחיר החדש
@@ -158,6 +158,8 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             return RedirectToAction("ManageBooks");
         }
+       
+
 
 
         // פעולה למחיקת ספר
@@ -278,8 +280,6 @@ namespace DigitalLibrary_NBA_IT.Controllers
             var waitlistEntries = db.WAITLIST.ToList();
             return View(waitlistEntries);
         }
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

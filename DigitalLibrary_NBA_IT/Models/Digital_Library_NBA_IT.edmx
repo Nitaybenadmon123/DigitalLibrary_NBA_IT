@@ -26,6 +26,7 @@
           <Property Name="ImageUrl" Type="varchar" MaxLength="500" />
           <Property Name="age" Type="int" />
           <Property Name="OriginalPrice" Type="nvarchar" MaxLength="50" />
+          <Property Name="DiscountStartDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Genres">
           <Key>
@@ -88,8 +89,6 @@
           <Property Name="User_ID" Type="int" />
           <Property Name="DateAdded" Type="datetime" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'Digital_library_DB.sys.database_firewall_rules' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <Association Name="FK__SiteFeedb__User___25518C17">
           <End Role="USERS" Type="Self.USERS" Multiplicity="1" />
           <End Role="SiteFeedback" Type="Self.SiteFeedback" Multiplicity="*" />
@@ -331,6 +330,7 @@ warning 6002: The table/view 'Digital_library_DB.sys.database_firewall_rules' do
           <NavigationProperty Name="UserLibrary" Relationship="Digital_library_DBModel.FK_UserLibrary_Books" FromRole="Books" ToRole="UserLibrary" />
           <NavigationProperty Name="WAITLIST" Relationship="Digital_library_DBModel.FK_Waitlist_Books" FromRole="Books" ToRole="WAITLIST" />
           <Property Name="OriginalPrice" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DiscountStartDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Genres">
           <Key>
@@ -542,6 +542,7 @@ warning 6002: The table/view 'Digital_library_DB.sys.database_firewall_rules' do
           <EntitySetMapping Name="Books">
             <EntityTypeMapping TypeName="Digital_library_DBModel.Books">
               <MappingFragment StoreEntitySet="Books">
+                <ScalarProperty Name="DiscountStartDate" ColumnName="DiscountStartDate" />
                 <ScalarProperty Name="OriginalPrice" ColumnName="OriginalPrice" />
                 <ScalarProperty Name="age" ColumnName="age" />
                 <ScalarProperty Name="ImageUrl" ColumnName="ImageUrl" />
