@@ -97,25 +97,23 @@ namespace DigitalLibrary_NBA_IT.Controllers
             {
                 try
                 {
-
-                    
-
-                    // 2. מחיקת רשומות מהספרייה האישית למעט ספרים שנרכשו
-                    var userLibraryItems = db.UserLibrary.Where(ul => ul.User_ID == userId && ul.IsBorrowed).ToList();
-                    db.UserLibrary.RemoveRange(userLibraryItems);
-
-                    // 3. מחיקת רשומות מרשימת ההמתנה
+                    // 1. מחיקת רשומות מטבלת WAITLIST
                     var waitlistItems = db.WAITLIST.Where(w => w.User_ID == userId).ToList();
                     db.WAITLIST.RemoveRange(waitlistItems);
+                    db.SaveChanges();
 
-                    // 4. מחיקת ביקורות שנכתבו על ידי המשתמש
+                    // 2. מחיקת רשומות מטבלת UserLibrary
+                    var userLibraryItems = db.UserLibrary.Where(ul => ul.User_ID == userId).ToList();
+                    db.UserLibrary.RemoveRange(userLibraryItems);
+                    db.SaveChanges();
+
+                    // 3. מחיקת רשומות מטבלת Reviews
                     var reviews = db.Reviews.Where(r => r.User_ID == userId).ToList();
                     db.Reviews.RemoveRange(reviews);
+                    db.SaveChanges();
 
-                    // מחיקת המשתמש
+                    // 4. מחיקת המשתמש עצמו
                     db.USERS.Remove(user);
-
-                    // שמירת השינויים
                     db.SaveChanges();
 
                     // נקה את הסשן
@@ -127,7 +125,8 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 }
                 catch (Exception ex)
                 {
-                    TempData["Message"] = $"An error occurred while deleting your account: {ex.Message}";
+                    string errorMessage = ex.InnerException?.Message ?? ex.Message;
+                    TempData["Message"] = $"An error occurred while deleting your account: {errorMessage}";
                     TempData["MessageType"] = "error";
                     return RedirectToAction("Profile");
                 }

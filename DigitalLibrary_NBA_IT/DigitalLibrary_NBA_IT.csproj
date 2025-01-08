@@ -19,9 +19,12 @@
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort>44313</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>
+    </IISExpressUseClassicPipelineMode>
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -161,9 +164,6 @@
     <Compile Include="Models\Books.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CART.cs">
-      <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\Digital_Library_NBA_IT.Context.cs">
       <AutoGen>True</AutoGen>
@@ -188,6 +188,9 @@
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Reviews.cs">
+      <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SiteFeedback.cs">
       <DependentUpon>Digital_Library_NBA_IT.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserLibrary.cs">
@@ -288,6 +291,7 @@
     <Content Include="Views\Library\AddReview.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
     <Content Include="Views\Admin\ManageWaitlist.cshtml" />
+    <Content Include="Views\User\SiteFeedback.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

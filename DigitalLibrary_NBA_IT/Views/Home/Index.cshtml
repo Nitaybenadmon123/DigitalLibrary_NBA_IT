@@ -149,6 +149,7 @@
     .btn-secondary {
         white-space: nowrap;
     }
+
     .price-filter-container {
         display: flex;
         justify-content: flex-end;
@@ -173,16 +174,44 @@
             font-size: 14px;
             cursor: pointer;
         }
+    .feedback-section {
+        display: inline-flex;
+        gap: 10px; /* רווח קטן בין הכפתורים */
+        align-items: center;
+        margin-top: 20px;
+        justify-content: center;
+    }
 
             .price-filter-container button:hover {
                 background-color: #218838;
             }
-
 </style>
 
 <div class="container mt-5">
     <h1 class="text-center mb-4 welcome-text">Welcome to the Digital Library</h1>
+    <div class="feedback-section">
+        <a href="@Url.Action("SiteFeedback", "User")" class="btn btn-primary">Give Feedback</a>
+        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#siteFeedbackModal">
+            View Feedbacks
+        </button>
+    </div>
 
+    <div class="modal fade" id="siteFeedbackModal" tabindex="-1" aria-labelledby="siteFeedbackModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="siteFeedbackModalLabel">ביקורות על האתר</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="feedbackContent">
+                        הביקורות ייטענו כאן
+                        <p class="text-center text-muted">טוען ביקורות...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- שורת חיפוש ומיון -->
     <div class="container mt-3 mb-4">
         <form method="get" action="@Url.Action("Index", "Home")" class="d-flex align-items-center">
@@ -466,7 +495,7 @@ function filterBooksByGenre(genreName) {
                     </div>
                 </div>
                 <hr>
-                
+
                 <hr>
                 <h5>Authors:</h5>
                 <ul>
@@ -524,6 +553,40 @@ function filterBooksByGenre(genreName) {
 
 
 
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const siteFeedbackModal = document.getElementById("siteFeedbackModal");
+        const feedbackContent = document.getElementById("feedbackContent");
+
+        siteFeedbackModal.addEventListener("show.bs.modal", function () {
+            fetch('@Url.Action("GetSiteFeedback", "Home")')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const feedbackHtml = data.map(f => `
+                            <div class="mb-3 border-bottom pb-2">
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        ${'★'.repeat(f.Stars)}${'☆'.repeat(5 - f.Stars)}
+                                    </div>
+                                    <small class="ms-2 text-muted">${new Date(f.CreatedDate).toLocaleDateString()}</small>
+                                </div>
+                                <p>${f.Feedback || "No feedback provided."}</p>
+                            </div>
+                        `).join("");
+
+                        feedbackContent.innerHTML = feedbackHtml;
+                    } else {
+                        feedbackContent.innerHTML = `<p class="text-center text-muted">No feedback yet.</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error loading feedback:", error);
+                    feedbackContent.innerHTML = `<p class="text-center text-danger">Error loading feedback. Please try again later.</p>`;
+                });
+        });
+    });
 </script>
 
 

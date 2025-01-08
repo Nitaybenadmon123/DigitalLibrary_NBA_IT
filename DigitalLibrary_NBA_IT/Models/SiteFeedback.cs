@@ -12,15 +12,14 @@ namespace DigitalLibrary_NBA_IT.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class CART
+    public partial class SiteFeedback
     {
-        public int cart_id { get; set; }
-        public int user_id { get; set; }
-        public string book_id { get; set; }
-        public int quantity { get; set; }
-        public Nullable<System.DateTime> date_added { get; set; }
+        public int ID { get; set; }
+        public int User_ID { get; set; }
+        public Nullable<int> Stars { get; set; }
+        public string Feedback { get; set; }
+        public Nullable<System.DateTime> CreatedDate { get; set; }
     
-        public virtual Books Books { get; set; }
         public virtual USERS USERS { get; set; }
     }
 }

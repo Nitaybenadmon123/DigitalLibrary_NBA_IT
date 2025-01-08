@@ -293,13 +293,51 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             db.SaveChanges();
         }
+        [HttpGet]
+        public ActionResult SiteFeedback()
+        {
+            if (Session["UserID"] == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
 
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SiteFeedback(int stars, string feedback)
+        {
+            if (Session["UserID"] == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
 
+            try
+            {
+                int userId = (int)Session["UserID"];
+                var siteFeedback = new SiteFeedback
+                {
+                    User_ID = userId,
+                    Stars = stars,
+                    Feedback = feedback,
+                    CreatedDate = DateTime.Now
+                };
 
+                db.SiteFeedback.Add(siteFeedback);
+                db.SaveChanges();
 
-
+                TempData["Message"] = "Thank you for your feedback!";
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = $"An error occurred: {ex.Message}";
+                return View();
+            }
+        }
 
 
 
     }
+
 }
