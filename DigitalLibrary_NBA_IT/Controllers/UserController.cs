@@ -242,10 +242,18 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 var book = db.Books.FirstOrDefault(b => b.Book_ID == loan.Book_ID);
                 if (book != null)
                 {
+                    int activeBorrowCount = db.UserLibrary
+               .Where(ul => ul.Book_ID == loan.Book_ID && ul.IsBorrowed)
+               .Count();
+
                     // העלאת המלאי של הספר
                     if (int.TryParse(book.CopiesAvailable, out int copies))
                     {
                         book.CopiesAvailable = (copies + 1).ToString();
+                    }
+                    if (activeBorrowCount == 3)
+                    {
+                        NotifyWaitlist(loan.Book_ID, emailService);
                     }
                 }
 
@@ -293,6 +301,48 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             db.SaveChanges();
         }
+
+        private void NotifyWaitlist(string bookId, EmailService emailService)
+        {
+            // שליפת שלושת הראשונים ברשימת ההמתנה
+            var waitlistEntries = db.WAITLIST
+                .Where(w => w.Book_ID == bookId)
+                .OrderBy(w => w.DateAdded)
+                .Take(3)
+                .ToList();
+
+            foreach (var entry in waitlistEntries)
+            {
+                var user = db.USERS.FirstOrDefault(u => u.user_id == entry.User_ID);
+                if (user != null && !string.IsNullOrEmpty(user.email))
+                {
+                    // שליחת מייל למשתמש
+                    string subject = "Book Now Available";
+                    string body = $@"
+                    Dear {user.name},<br/><br/>
+                    The book you requested '<b>{db.Books.FirstOrDefault(b => b.Book_ID == bookId)?.Title}'</b> is now available.<br/>
+                    Please borrow it as soon as possible.only the first one who borrow it will get the book ! harry up ! <br/><br/>
+                    Thank you for using our digital library!<br/>
+                    <i>Digital Library Team</i>";
+
+                    try
+                    {
+                        emailService.SendEmail(user.email, subject, body);
+
+                        // הסרת המשתמש מרשימת ההמתנה
+                        db.WAITLIST.Remove(entry);
+                    }
+                    catch (Exception ex)
+                    {
+                        // טיפול בשגיאות שליחת מייל (לא יגרום להפסקת התהליך)
+                        Console.WriteLine($"Failed to send email to {user.email}: {ex.Message}");
+                    }
+                }
+            }
+
+            db.SaveChanges();
+        }
+
         [HttpGet]
         public ActionResult SiteFeedback()
         {

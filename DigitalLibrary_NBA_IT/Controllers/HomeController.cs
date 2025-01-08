@@ -279,6 +279,18 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             if (bookBorrowedCount >= 3)
             {
+
+                var existingWaitlistEntry = db.WAITLIST
+                    .FirstOrDefault(w => w.Book_ID == id && w.User_ID == userId);
+
+                if (existingWaitlistEntry != null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"You are already on the waitlist for the book '{book.Title}'."
+                    }, JsonRequestBehavior.AllowGet);
+                }
                 var waitlistEntry = new WAITLIST
                 {
                     Book_ID = id, // מזהה הספר
