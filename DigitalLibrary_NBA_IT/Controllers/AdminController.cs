@@ -242,6 +242,98 @@ namespace DigitalLibrary_NBA_IT.Controllers
 
             return RedirectToAction("ManageBooks");
         }
+        ///////
+        // פעולה להצגת רשימת ההמתנה
+        [HttpGet]
+        public ActionResult ManageWaitlist()
+        {
+            var waitlistEntries = db.WAITLIST.ToList();
+            return View(waitlistEntries);
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult NotifyUser(int waitlistId, string message)
+        {
+            return Json(new { success = false, message = "Error: Waitlist entry not found." });
+
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteWaitlistEntry(int waitlistId)
+        {
+            try
+            {
+                var entry = db.WAITLIST.Find(waitlistId);
+
+                if (entry != null)
+                {
+                    db.WAITLIST.Remove(entry);
+                    db.SaveChanges();
+                    TempData["Message"] = "Waitlist entry deleted successfully.";
+
+                    // החזרת ה-View עם הרשומות המעודכנות
+                    var waitlistEntries = db.WAITLIST.ToList();
+                    return View("ManageWaitlist", waitlistEntries);
+                }
+
+                TempData["Message"] = "Waitlist entry not found.";
+                return RedirectToAction("ManageWaitlist");
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = $"An error occurred: {ex.Message}";
+                return RedirectToAction("ManageWaitlist");
+            }
+        }
+
+
+
+
+        [HttpGet]
+        public JsonResult GetWaitlistDetails()
+        {
+            try
+            {
+                var waitlistData = db.WAITLIST
+                    .Join(
+                        db.Books,
+                        waitlistEntry => waitlistEntry.Book_ID,
+                        book => book.Book_ID,
+                        (waitlistEntry, book) => new
+                        {
+                            Waitlist_ID = waitlistEntry.ID,
+                            User_ID = waitlistEntry.User_ID,
+                            DateAdded = waitlistEntry.DateAdded,
+                            BookTitle = book.Title
+                        }
+                    )
+                    .Join(
+                        db.USERS,
+                        waitlistEntry => waitlistEntry.User_ID,
+                        user => user.user_id,
+                        (waitlistEntry, user) => new
+                        {
+                            Waitlist_ID = waitlistEntry.Waitlist_ID,
+                            BookTitle = waitlistEntry.BookTitle,
+                            UserName = user.name,
+                            UserEmail = user.email,
+                            DateAdded = waitlistEntry.DateAdded
+                        }
+                    )
+                    .ToList();
+
+                return Json(new { success = true, Waitlist = waitlistData }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"An error occurred: {ex.Message}" }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
     }
 

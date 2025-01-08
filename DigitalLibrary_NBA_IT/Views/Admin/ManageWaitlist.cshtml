@@ -1,0 +1,113 @@
+﻿@model IEnumerable<DigitalLibrary_NBA_IT.Models.WAITLIST>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Waitlist | Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .table-container {
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        #searchInput {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">Manage Waitlist</h1>
+
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-info">@TempData["Message"]</div>
+        }
+
+        <!-- Search Bar -->
+        <div class="table-container">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by book title, user name, or email..." />
+        </div>
+
+        <!-- Waitlist Table -->
+        <div class="table-container">
+            <table class="table table-striped table-bordered" id="waitlistTable">
+                <thead>
+                    <tr>
+                        <th>Waitlist ID</th>
+                        <th>Book Title</th>
+                        <th>User Name</th>
+                        <th>User Email</th>
+                        <th>Date Added</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="waitlistTableBody">
+                    @foreach (var entry in Model)
+                    {
+                        <tr id="waitlistRow-@entry.ID">
+                            <td>@entry.ID</td>
+                            <td>@entry.Books.Title</td> <!-- Assuming "Title" is the property for book title -->
+                            <td>@entry.USERS.name</td> <!-- Assuming "name" is the property for user name -->
+                            <td>@entry.USERS.email</td> <!-- Assuming "email" is the property for user email -->
+                            <td>@entry.DateAdded.ToString()</td>
+                            <td>
+                                <!-- Notify Button -->
+                                <form action="/Admin/NotifyUser" method="post" style="display:inline-block;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="waitlistId" value="@entry.ID" />
+                                    <button type="submit" class="btn btn-success btn-sm">Notify</button>
+                                </form>
+
+                                <!-- Delete Button -->
+                                <form action="/Admin/DeleteWaitlistEntry" method="post" style="display:inline-block;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="waitlistId" value="@entry.ID" />
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this waitlist entry?');">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">No waitlist entries found</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Real-Time Search
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const searchValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#waitlistTableBody tr');
+
+            rows.forEach(row => {
+                const bookTitle = row.cells[1]?.textContent.toLowerCase() || '';
+                const userName = row.cells[2]?.textContent.toLowerCase() || '';
+                const userEmail = row.cells[3]?.textContent.toLowerCase() || '';
+
+                if (bookTitle.includes(searchValue) || userName.includes(searchValue) || userEmail.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
