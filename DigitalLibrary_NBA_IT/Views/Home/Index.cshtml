@@ -16,7 +16,8 @@
 <!-- תמונת רקע לכל העמוד -->
 <style>
     body {
-        background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1920&h=1080&fit=crop');
+        /*        background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1920&h=1080&fit=crop');
+*/ background-image: url('https://www.yo-yoo.co.il/rekaim/images/uploads/8a8021.jpg');
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
@@ -191,7 +192,7 @@
     <h1 class="text-center mb-4 welcome-text">Welcome to the Digital Library</h1>
     <div class="feedback-section">
         <a href="@Url.Action("SiteFeedback", "User")" class="btn btn-primary">Give Feedback</a>
-        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#siteFeedbackModal">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#siteFeedbackModal">
             View Feedbacks
         </button>
     </div>
@@ -238,7 +239,7 @@
             <div class="price-filter-container">
                 <input type="number" step="0.5" name="minPrice" placeholder="Min" value="@ViewBag.MinPrice" />
                 <input type="number" step="0.5" name="maxPrice" placeholder="Max" value="@ViewBag.MaxPrice" />
-                <button type="submit">:Filter by price</button>
+                <button type="submit">:Filter by price </button>
             </div>
 
         </form>
@@ -518,7 +519,7 @@ function filterBooksByGenre(genreName) {
                     ${data.data.Reviews.length > 0
                         ? data.data.Reviews.map(review => `
                             <li>
-                                <strong>User ID: ${review.User_ID}</strong> rated ${review.Rating}/5 on ${new Date(review.ReviewDate).toLocaleDateString()}
+                                <strong>User ID: ${review.User_ID}</strong> rated ${review.Rating}/5 
                                 <p>${review.Feedback}</p>
                             </li>
                         `).join('')
@@ -570,7 +571,6 @@ function filterBooksByGenre(genreName) {
                                     <div>
                                         ${'★'.repeat(f.Stars)}${'☆'.repeat(5 - f.Stars)}
                                     </div>
-                                    <small class="ms-2 text-muted">${new Date(f.CreatedDate).toLocaleDateString()}</small>
                                 </div>
                                 <p>${f.Feedback || "No feedback provided."}</p>
                             </div>
