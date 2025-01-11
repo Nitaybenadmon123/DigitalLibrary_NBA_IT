@@ -58,6 +58,10 @@ namespace DigitalLibrary_NBA_IT.Controllers
                     db.Reviews.RemoveRange(reviews);
                     db.SaveChanges();
 
+                    var reviewsSite = db.SiteFeedback.Where(u => u.User_ID == userId).ToList();
+                    db.SiteFeedback.RemoveRange(reviewsSite);
+                    db.SaveChanges();
+
                     // מחיקת המשתמש עצמו
                     db.USERS.Remove(user);
                     db.SaveChanges();

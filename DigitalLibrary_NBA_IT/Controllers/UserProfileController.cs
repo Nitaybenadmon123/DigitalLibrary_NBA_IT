@@ -110,6 +110,10 @@ namespace DigitalLibrary_NBA_IT.Controllers
                     // 3. מחיקת רשומות מטבלת Reviews
                     var reviews = db.Reviews.Where(r => r.User_ID == userId).ToList();
                     db.Reviews.RemoveRange(reviews);
+                    db.SaveChanges(); 
+                    
+                    var reviewsSite = db.SiteFeedback.Where(u => u.User_ID == userId).ToList();
+                    db.SiteFeedback.RemoveRange(reviewsSite);
                     db.SaveChanges();
 
                     // 4. מחיקת המשתמש עצמו
