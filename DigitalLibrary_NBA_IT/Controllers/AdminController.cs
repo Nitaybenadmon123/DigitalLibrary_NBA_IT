@@ -125,6 +125,11 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [HttpGet]
         public ActionResult ManageBooks(string query)
         {
+            if (Session["UserID"] == null || !(Session["IsAdmin"] is bool isAdmin && isAdmin))
+            {
+                TempData["Message"] = "You must be logged in as an admin to access this page.";
+                return RedirectToAction("Login", "User");
+            }
             var books = db.Books.AsQueryable();
 
             // בדיקה אם השאילתה מכילה ערך והוספת תנאי חיפוש
@@ -142,6 +147,11 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdatePrice(int bookId, string newPrice)
         {
+            if (Session["UserID"] == null || !(Session["IsAdmin"] is bool isAdmin && isAdmin))
+            {
+                TempData["Message"] = "You must be logged in as an admin to access this page.";
+                return RedirectToAction("Login", "User");
+            }
             var book = db.Books.FirstOrDefault(b => b.Book_ID == bookId.ToString());
             if (book != null && decimal.TryParse(newPrice, out decimal parsedPrice))
             {
@@ -206,6 +216,12 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddBook(string Title, string Publish, decimal Price, int CopiesAvailable, string ImageUrl, int age)
         {
+
+            if (Session["UserID"] == null || !(Session["IsAdmin"] is bool isAdmin && isAdmin))
+            {
+                TempData["Message"] = "You must be logged in as an admin to access this page.";
+                return RedirectToAction("Login", "User");
+            }
             // מציאת Book_ID הגבוה ביותר בטבלה
             int maxBookId = db.Books.ToList().Select(b => int.TryParse(b.Book_ID.Trim(), out int id) ? id : 0).Max();
             int newBookId = maxBookId + 1;
@@ -242,6 +258,12 @@ namespace DigitalLibrary_NBA_IT.Controllers
         // פעולה לעמוד דוחות מערכת
         public ActionResult SystemReports()
         {
+            if (Session["UserID"] == null || !(Session["IsAdmin"] is bool isAdmin && isAdmin))
+            {
+                TempData["Message"] = "You must be logged in as an admin to access this page.";
+                return RedirectToAction("Login", "User");
+            }
+
             if (Session["IsAdmin"] == null || !(bool)Session["IsAdmin"])
             {
                 return RedirectToAction("Login", "User");
@@ -345,6 +367,11 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteWaitlistEntry(int waitlistId)
         {
+            if (Session["UserID"] == null || !(Session["IsAdmin"] is bool isAdmin && isAdmin))
+            {
+                TempData["Message"] = "You must be logged in as an admin to access this page.";
+                return RedirectToAction("Login", "User");
+            }
             try
             {
                 var entry = db.WAITLIST.Find(waitlistId);
@@ -376,6 +403,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [HttpGet]
         public JsonResult GetWaitlistDetails()
         {
+
             try
             {
                 var waitlistData = db.WAITLIST
