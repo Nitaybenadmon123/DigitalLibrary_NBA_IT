@@ -55,6 +55,9 @@ namespace DigitalLibrary_NBA_IT.Controllers
             var bookToRemove = db.UserLibrary
                 .FirstOrDefault(ul => ul.Book_ID.Trim() == bookId.Trim() && ul.User_ID == userId && !ul.IsBorrowed);
 
+
+            var book = db.Books
+               .FirstOrDefault(ul => ul.Book_ID.Trim() == bookId.Trim() );
             if (bookToRemove == null)
             {
                 // הספר אינו ספר שנרכש
@@ -66,6 +69,11 @@ namespace DigitalLibrary_NBA_IT.Controllers
             {
                 // הסרת הספר
                 db.UserLibrary.Remove(bookToRemove);
+
+                if (int.TryParse(book.CopiesAvailable, out int copies))
+                {
+                    book.CopiesAvailable = (copies + 1).ToString();
+                }
                 db.SaveChanges();
                 TempData["Message"] = "Book successfully removed from your library.";
             }
