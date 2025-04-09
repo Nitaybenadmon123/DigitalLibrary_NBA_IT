@@ -64,13 +64,8 @@ namespace DigitalLibrary_NBA_IT.Controllers
                 //הצפנה בשיטה החדשה של אנה
                 user.password = string.Concat(System.Security.Cryptography.SHA256.Create().ComputeHash(System.Text.Encoding.UTF8.GetBytes(user.password)).Select(b => b.ToString("x2")));
 
-
-
-
-
-
                 // הצפנת הסיסמה לפני שמירה למסד
-                user.password = BCrypt.Net.BCrypt.HashPassword(user.password);
+                //user.password = BCrypt.Net.BCrypt.HashPassword(user.password);
                
                 db.USERS.Add(user);
                 db.SaveChanges();
@@ -94,30 +89,29 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(string email, string password)
         {
-            var user = db.USERS.FirstOrDefault(u => u.email == email);
+            var user = db.USERS.FirstOrDefault(u => u.email.ToLower() == email.ToLower());
 
             if (user != null)
             {
-                // בדיקת הסיסמה שהוזנה מול הסיסמה המוצפנת
-                if (BCrypt.Net.BCrypt.Verify(password, user.password))
+                // הצפנת הסיסמה שהוזנה כדי להשוות למה ששמור במסד (SHA-256)
+                string hashedInput = string.Concat(System.Security.Cryptography.SHA256.Create()
+                    .ComputeHash(System.Text.Encoding.UTF8.GetBytes(password))
+                    .Select(b => b.ToString("x2")));
+
+                if (user.password == hashedInput)
                 {
                     HandleExpiredLoansForAllUsers();
 
+                    Session["UserID"] = user.user_id;
+                    Session["UserName"] = user.name;
+                    Session["IsAdmin"] = user.isAdmin;
+
                     if (user.isAdmin)
                     {
-                        Session["UserID"] = user.user_id;
-                        Session["UserName"] = user.name;
-                        Session["IsAdmin"] = true;
-
-
                         return RedirectToAction("AdminDashboard");
                     }
                     else
                     {
-                        Session["UserID"] = user.user_id;
-                        Session["UserName"] = user.name;
-                        Session["IsAdmin"] = false;
-
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -126,6 +120,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
             TempData["Message"] = "Invalid email or password.";
             return RedirectToAction("Login");
         }
+
 
 
         // GET: AdminDashboard - עמוד מנהל
