@@ -5,6 +5,9 @@ using System.Web.Mvc;
 using DigitalLibrary_NBA_IT.Models;
 using BCrypt.Net;
 using System.Data.Entity;
+using System.Security.Cryptography;
+using System.Text;
+
 
 namespace DigitalLibrary_NBA_IT.Controllers
 {
@@ -56,13 +59,26 @@ namespace DigitalLibrary_NBA_IT.Controllers
             {
                 user.registration_date = DateTime.Now;
                 user.isAdmin = false; // משתמש רגיל כברירת מחדל
-                db.USERS.Add(user);
-                user.password = BCrypt.Net.BCrypt.HashPassword(user.password);
 
+
+                //הצפנה בשיטה החדשה של אנה
+                user.password = string.Concat(System.Security.Cryptography.SHA256.Create().ComputeHash(System.Text.Encoding.UTF8.GetBytes(user.password)).Select(b => b.ToString("x2")));
+
+
+
+
+
+
+                // הצפנת הסיסמה לפני שמירה למסד
+                user.password = BCrypt.Net.BCrypt.HashPassword(user.password);
+               
+                db.USERS.Add(user);
                 db.SaveChanges();
+
                 TempData["Message"] = "Registration successful! Please log in.";
                 return RedirectToAction("Login");
             }
+
 
             return View(user);
         }
