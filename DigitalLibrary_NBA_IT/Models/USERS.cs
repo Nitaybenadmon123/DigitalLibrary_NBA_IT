@@ -17,10 +17,11 @@ namespace DigitalLibrary_NBA_IT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public USERS()
         {
+            this.CART = new HashSet<CART>();
             this.Reviews = new HashSet<Reviews>();
+            this.SiteFeedback = new HashSet<SiteFeedback>();
             this.UserLibrary = new HashSet<UserLibrary>();
             this.WAITLIST = new HashSet<WAITLIST>();
-            this.SiteFeedback = new HashSet<SiteFeedback>();
         }
     
         public int user_id { get; set; }
@@ -29,14 +30,19 @@ namespace DigitalLibrary_NBA_IT.Models
         public string password { get; set; }
         public Nullable<System.DateTime> registration_date { get; set; }
         public bool isAdmin { get; set; }
+        public string credit_card_number { get; set; }
+        public string valid_date { get; set; }
+        public string cvc { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CART> CART { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Reviews> Reviews { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SiteFeedback> SiteFeedback { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserLibrary> UserLibrary { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WAITLIST> WAITLIST { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SiteFeedback> SiteFeedback { get; set; }
     }
 }

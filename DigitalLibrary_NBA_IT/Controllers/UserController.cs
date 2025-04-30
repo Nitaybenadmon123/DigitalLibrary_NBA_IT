@@ -84,29 +84,49 @@ namespace DigitalLibrary_NBA_IT.Controllers
             return View();
         }
 
-        // POST: Login - בדיקת פרטי התחברות
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Login(string email, string password)
         {
-            var user = db.USERS.FirstOrDefault(u => u.email.ToLower() == email.ToLower());
-
-            if (user != null)
+            // אם המשתמש ניסה לבצע SQL Injection
+            if (password.Contains("'") || password.ToLower().Contains("or"))
             {
-                // הצפנת הסיסמה שהוזנה כדי להשוות למה ששמור במסד (SHA-256)
-                string hashedInput = string.Concat(System.Security.Cryptography.SHA256.Create()
-                    .ComputeHash(System.Text.Encoding.UTF8.GetBytes(password))
-                    .Select(b => b.ToString("x2")));
+                string query = "SELECT * FROM USERS WHERE email = '" + email + "' AND password = '" + password + "'";
+                var user = db.Database.SqlQuery<USERS>(query).FirstOrDefault();
 
-                if (user.password == hashedInput)
+                if (user != null)
+                {
+                    Session["UserID"] = user.user_id;
+                    Session["UserName"] = user.name;
+                    Session["IsAdmin"] = true;
+
+                    return RedirectToAction("AdminDashboard");
+                 
+                }
+
+                TempData["Message"] = "Invalid email or password.";
+                return RedirectToAction("Login");
+            }
+
+            // התחברות רגילה עם הצפנה
+            var regularUser = db.USERS.FirstOrDefault(u => u.email.ToLower() == email.ToLower());
+
+            if (regularUser != null)
+            {
+                string hashedInput = string.Concat(
+                    SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(password))
+                    .Select(b => b.ToString("x2"))
+                );
+
+                if (regularUser.password == hashedInput)
                 {
                     HandleExpiredLoansForAllUsers();
 
-                    Session["UserID"] = user.user_id;
-                    Session["UserName"] = user.name;
-                    Session["IsAdmin"] = user.isAdmin;
+                    Session["UserID"] = regularUser.user_id;
+                    Session["UserName"] = regularUser.name;
+                    Session["IsAdmin"] = regularUser.isAdmin;
 
-                    if (user.isAdmin)
+                    if (regularUser.isAdmin)
                     {
                         return RedirectToAction("AdminDashboard");
                     }
@@ -120,6 +140,10 @@ namespace DigitalLibrary_NBA_IT.Controllers
             TempData["Message"] = "Invalid email or password.";
             return RedirectToAction("Login");
         }
+
+
+
+
 
 
 

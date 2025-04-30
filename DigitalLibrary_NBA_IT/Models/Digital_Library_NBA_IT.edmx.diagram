@@ -14,23 +14,43 @@
 <<<<<<< HEAD
         
         
-        <EntityTypeShape EntityType="Digital_library_DBModel.Authors" Width="1.5" PointX="8.375" PointY="1.125" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.Books" Width="1.5" PointX="3.75" PointY="1.125" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.Genres" Width="1.5" PointX="6.125" PointY="1.125" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.Reviews" Width="1.5" PointX="10.875" PointY="4.375" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.UserLibrary" Width="1.5" PointX="6" PointY="4.5" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.USERS" Width="1.5" PointX="0.625" PointY="1.125" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.WAITLIST" Width="1.5" PointX="10.625" PointY="0.875" />
+        
+        <EntityTypeShape EntityType="Digital_library_DBModel.Authors" Width="1.5" PointX="6.3542916115160528" PointY="26.491448697862889" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.Books" Width="1.5" PointX="11.574813097517385" PointY="5.9265616116703308" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.CART" Width="1.5" PointX="2.6568763845865035" PointY="24.520915564392187" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.Genres" Width="1.5" PointX="6.7470272717750763" PointY="15.61167620849408" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.Reviews" Width="1.5" PointX="10.625441181764678" PointY="5.3792265529647594" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.SiteFeedback" Width="1.5" PointX="4.3902869189112854" PointY="30.126796453318928" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.UserLibrary" Width="1.5" PointX="9.16729854474184" PointY="14.997124440501036" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.USERS" Width="1.5" PointX="8.1412368193926472" PointY="25.420351397907524" />
+        <EntityTypeShape EntityType="Digital_library_DBModel.WAITLIST" Width="1.5" PointX="8.252327138675529" PointY="25.925143343361626" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Authors_Books" />
+        <AssociationConnector Association="Digital_library_DBModel.FK__CART__book_id__787EE5A0" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Genres_Books" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Reviews_Books" />
         <AssociationConnector Association="Digital_library_DBModel.FK_UserLibrary_Books" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Waitlist_Books" />
+        <AssociationConnector Association="Digital_library_DBModel.FK__CART__user_id__778AC167" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Reviews_Users" />
+        <AssociationConnector Association="Digital_library_DBModel.FK__SiteFeedb__User___25518C17" />
         <AssociationConnector Association="Digital_library_DBModel.FK_UserLibrary_Users" />
         <AssociationConnector Association="Digital_library_DBModel.FK_Waitlist_Users" />
-        <EntityTypeShape EntityType="Digital_library_DBModel.SiteFeedback" Width="1.5" PointX="8.375" PointY="4.375" />
-        <AssociationConnector Association="Digital_library_DBModel.FK__SiteFeedb__User___25518C17" />
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
