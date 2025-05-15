@@ -88,26 +88,7 @@ namespace DigitalLibrary_NBA_IT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(string email, string password)
         {
-            // אם המשתמש ניסה לבצע SQL Injection
-            if (password.Contains("'") || password.ToLower().Contains("or"))
-            {
-                string query = "SELECT * FROM USERS WHERE email = '" + email + "' AND password = '" + password + "'";
-                var user = db.Database.SqlQuery<USERS>(query).FirstOrDefault();
-
-                if (user != null)
-                {
-                    Session["UserID"] = user.user_id;
-                    Session["UserName"] = user.name;
-                    Session["IsAdmin"] = true;
-
-                    return RedirectToAction("AdminDashboard");
-                 
-                }
-
-                TempData["Message"] = "Invalid email or password.";
-                return RedirectToAction("Login");
-            }
-
+           
             // התחברות רגילה עם הצפנה
             var regularUser = db.USERS.FirstOrDefault(u => u.email.ToLower() == email.ToLower());
 
